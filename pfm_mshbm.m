@@ -36,18 +36,29 @@ system(['echo ' OutDir '/Tmp/Data.dtseries.nii >> ' OutDir '/Test/data_list/fMRI
 rmpath(genpath(Paths{1}));
 addpath(genpath(Paths{2}));
 
-% generate FC profiles using modified CBIG function;
+% generate FC profiles (reads the fMRI_list/censor_list you just wrote);
+% this default call produces a SINGLE unsplit file:
 CBIG_MSHBM_generate_profiles2('fs_LR_900','fs_LR_32k',[OutDir '/Test'],'1','1','0');
+
 system(['rm -rf ' OutDir '/Tmp']); % remove the temporary directory;
 
-% write out the paths to the FC profiles
+% write out the paths to the FC profiles  >>> ONE SESSION, UNSPLIT <<<
 system(['mkdir -p ' OutDir '/Test/profile_list/test_set/']);
-system(['echo ' OutDir '/Test/profiles/sub1/sess1/sub1_sess1_fs_LR_32k_roifs_LR_900.surf2surf_profile_1.mat >> ' OutDir '/Test/profile_list/test_set/sess1.txt']);
-system(['echo ' OutDir '/Test/profiles/sub1/sess1/sub1_sess1_fs_LR_32k_roifs_LR_900.surf2surf_profile_2.mat >> ' OutDir '/Test/profile_list/test_set/sess2.txt']);
+system(['echo ' OutDir '/Test/profiles/sub1/sess1/' ...
+       'sub1_sess1_fs_LR_32k_roifs_LR_900.surf2surf_profile.mat ' ...
+       '> ' OutDir '/Test/profile_list/test_set/sess1.txt']);
+
+% !!! remove sess2: you don't have a second session
+% system(['echo ..._profile_2.mat >> ' OutDir '/Test/profile_list/test_set/sess2.txt']);
 
 % define output file name & run MS-HBM;
-OutFile = ['MS-HBM_FunctionalNetworks_VertexWiseThresh0.01_w' num2str(PriorWeight) '_c' num2str(Smoothness)];
-[lh,rh] = CBIG_MSHBM_generate_individual_parcellation([OutDir '/Test'],'fs_LR_32k','2','20','1',num2str(PriorWeight),num2str(Smoothness));
+OutFile = ['MS-HBM_FunctionalNetworks_VertexWiseThresh0.01_w' num2str(PriorWeight) ...
+           '_c' num2str(Smoothness)];
+
+
+% Tell MS-HBM you have **1** session (not 2):
+[lh,rh] = CBIG_MSHBM_generate_individual_parcellation([OutDir '/Test'], ...
+          'fs_LR_32k', '1', '20', '1', num2str(PriorWeight), num2str(Smoothness));
 
 % adjust paths
 rmpath(genpath(Paths{2}));
@@ -107,5 +118,5 @@ system(['wb_command -cifti-label-to-border ' OutDir '/' OutFile '.dlabel.nii -bo
 system(['rm -rf ' OutDir '/T*']);
 system(['rm ' OutDir '/LabelListFile.txt']);
 
-end
 
+end
