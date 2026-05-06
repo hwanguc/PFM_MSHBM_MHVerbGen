@@ -10,4 +10,4 @@ This respiratory contains the MATLAB code for precision functional mapping ([Gor
 
 **_./MSHBM-Priors.mat_** - The prior weights/parameters for the MSHBM.
 
-**_./calculate_network_surface_area.m_** - Calculate the surface area per network (UNTESTED!).
+**_./pfm_calculate_network_size.m_** - Calculate the surface area per cortical network.
