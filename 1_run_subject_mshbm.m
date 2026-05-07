@@ -1,9 +1,11 @@
-%% define paths 
+%% Define paths 
 Paths{1} = '~/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen/res0urces/read_write_cifti'; % this is the path to location containing ft_read/write functions
-Paths{2} = '~/Apps/Utils/CBIG-master'; % this is the path the Thomas Yeo's functions, that have been modified by us
+Paths{2} = '~/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen/res0urces/helper_functions'; % this is the path to other helper functions
+Paths{3} = '~/Apps/Utils/CBIG-master'; % this is the path the Thomas Yeo's functions, that have been modified by us
 
 addpath(genpath(Paths{1}));
 addpath(genpath(Paths{2}));
+addpath(genpath(Paths{3}));
 
 load('MSHBM-Priors.mat');
 
