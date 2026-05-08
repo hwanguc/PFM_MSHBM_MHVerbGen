@@ -8,4 +8,6 @@ This respiratory contains the MATLAB code for precision functional mapping ([Gor
 
 **_./1_run_subject_mshbm.m_** - Run a single-subject MS-HBM pipeline and output parcellation figures.
 
-**_./2_run_subject_connectivity_cab-np.sh_** - Run a single subject whole-brain connectivity extraction based on the [CAB-NP atlas](https://github.com/ColeLab/ColeAnticevicNetPartition/blob/master/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR.dlabel.nii) using using wb_command functions.
+**_./2_run_subject_connectivity_extraction_cab-np.sh_** - Run a single subject whole-brain connectivity extraction based on the [CAB-NP atlas](https://github.com/ColeLab/ColeAnticevicNetPartition/blob/master/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR.dlabel.nii) using Connectome Workbench.
+
+**_./3_run_subject_connectivity_analysis_cab-np.py_** - Run a single subject ROI connectivity analysis based on the [CAB-NP atlas](https://github.com/ColeLab/ColeAnticevicNetPartition/blob/master/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR.dlabel.nii), with cortical regions mapped from [Glasser's atlas](https://www.nature.com/articles/nature18933).

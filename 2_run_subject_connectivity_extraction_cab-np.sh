@@ -13,7 +13,10 @@ set -e
 # CONFIG
 # ============================================================
 SUBJ=$1
+#DTSERIES=/home/hanwang/Documents/Data/ucl/gos_ich/hcp_example_data/${SUBJ}/MNINonLinear/Results/rfMRI_REST1_RL/rfMRI_REST1_RL_Atlas_MSMAll_hp2000_clean_rclean_tclean.dtseries.nii
 DTSERIES=/home/hanwang/Documents/Data/ucl/gos_ich/hcp_example_data/${SUBJ}/MNINonLinear/Results/rfMRI_REST1_RL/rfMRI_REST1_RL_Atlas_hp2000_clean.dtseries.nii
+
+
 
 PROJECT_DIR=/home/hanwang/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen
 ATLAS=${PROJECT_DIR}/atlas/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR.dlabel.nii
