@@ -13,8 +13,8 @@ set -e
 # CONFIG
 # ============================================================
 SUBJ=$1
-#DTSERIES=/home/hanwang/Documents/Data/ucl/gos_ich/hcp_example_data/${SUBJ}/MNINonLinear/Results/rfMRI_REST1_RL/rfMRI_REST1_RL_Atlas_MSMAll_hp2000_clean_rclean_tclean.dtseries.nii
-DTSERIES=/home/hanwang/Documents/Data/ucl/gos_ich/hcp_example_data/${SUBJ}/MNINonLinear/Results/rfMRI_REST1_RL/rfMRI_REST1_RL_Atlas_hp2000_clean.dtseries.nii
+# Krishnan et al. (2021) data processed with adapted HCP pipeline (MSMSulc, no MSMAll)
+DTSERIES=/home/hanwang/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed/${SUBJ}/MNINonLinear/Results/rfMRI_VERBGEN_AP/rfMRI_VERBGEN_AP_Atlas_hp2000_clean.dtseries.nii
 
 
 
@@ -28,7 +28,7 @@ mkdir -p ${OUTDIR}
 if [ -z "${SUBJ}" ]; then
     echo "ERROR: No subject ID provided."
     echo "Usage: $0 SUBJECT_ID"
-    echo "Example: $0 100307"
+    echo "Example: $0 sub-509BT"
     exit 1
 fi
 
@@ -52,15 +52,15 @@ wb_command -cifti-parcellate \
     ${DTSERIES} \
     ${ATLAS} \
     COLUMN \
-    ${OUTDIR}/sub-${SUBJ}.ptseries.nii
+    ${OUTDIR}/${SUBJ}.ptseries.nii
 
 # ============================================================
 # Correlate (Fisher-z)
 # ============================================================
 echo "[2/3] Computing FC matrix..."
 wb_command -cifti-correlation \
-    ${OUTDIR}/sub-${SUBJ}.ptseries.nii \
-    ${OUTDIR}/sub-${SUBJ}.pconn.nii \
+    ${OUTDIR}/${SUBJ}.ptseries.nii \
+    ${OUTDIR}/${SUBJ}.pconn.nii \
     -fisher-z
 
 # ============================================================
@@ -68,7 +68,7 @@ wb_command -cifti-correlation \
 # ============================================================
 echo "[3/3] Exporting to text..."
 wb_command -cifti-convert -to-text \
-    ${OUTDIR}/sub-${SUBJ}.pconn.nii \
-    ${OUTDIR}/sub-${SUBJ}_FC.txt
+    ${OUTDIR}/${SUBJ}.pconn.nii \
+    ${OUTDIR}/${SUBJ}_FC.txt
 
-echo "Done: ${OUTDIR}/sub-${SUBJ}_FC.txt"
+echo "Done: ${OUTDIR}/${SUBJ}_FC.txt"

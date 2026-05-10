@@ -1,0 +1,14 @@
+ROI Glasser atlas:
+
+ACC (s32, p32, a24, p24, d32): https://www.sciencedirect.com/science/article/pii/S1053811920305450
+
+AI(AVI,AAIC): https://pmc.ncbi.nlm.nih.gov/articles/PMC6032992/
+
+LPFC:https://pmc.ncbi.nlm.nih.gov/articles/PMC11761636/
+
+The HCP multimodal parcellation (MMP1.0) divides the cortex into 180 areas. We have previously identified that the 9 MD patches overlap with 10 areas that we have labelled core MD as they showed the strongest co-activations and resting-state fMRI interconnectedeness (Assem et al., 2020). The lateral frontal cortex encompasses 6 core MD areas: a9-46v, p9-46v, 8C, IFJp, i6-8, AVI (white borders in Figure 1a).
+
+The lateral PFC mask was defined to encompass lateral frontal core MD areas and any area that shared a border with them. Our reasoning was to capture category preferences in the immediate vicinity of core MD regions. Additionally, areas 44 and 45 were included to avoid gaps in the mask (Figure 1c).
+
+
+

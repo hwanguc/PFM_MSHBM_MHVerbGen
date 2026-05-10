@@ -1,4 +1,4 @@
-%% Define paths 
+% Define paths 
 Paths{1} = '~/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen/res0urces/read_write_cifti'; % this is the path to location containing ft_read/write functions
 Paths{2} = '~/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen/res0urces/helper_functions'; % this is the path to other helper functions
 Paths{3} = '~/Apps/Utils/CBIG-master'; % this is the path the Thomas Yeo's functions, that have been modified by us
@@ -9,17 +9,17 @@ addpath(genpath(Paths{3}));
 
 load('MSHBM-Priors.mat');
 
-% Define HCP subject info
-Subject = '100307';
-BaseDir = '~/Documents/Data/ucl/gos_ich/hcp_example_data';
+% Define subject info (Krishnan et al. 2021, processed with adapted HCP pipeline)
+Subject = 'sub-509BT';
+BaseDir = '~/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed';
+fMRIRun = 'rfMRI_VERBGEN_AP';
 
 % Load surfaces
 MidthickSurfs{1} = fullfile(BaseDir, Subject, 'MNINonLinear/fsaverage_LR32k', [Subject '.L.midthickness.32k_fs_LR.surf.gii']);
 MidthickSurfs{2} = fullfile(BaseDir, Subject, 'MNINonLinear/fsaverage_LR32k', [Subject '.R.midthickness.32k_fs_LR.surf.gii']);
 
-% Load dtseries
-C = ft_read_cifti_mod(fullfile(BaseDir, Subject, 'MNINonLinear/Results/rfMRI_REST1_RL', 'rfMRI_REST1_RL_Atlas_hp2000_clean.dtseries.nii'));
-%C = ft_read_cifti_mod(fullfile(BaseDir, Subject, 'MNINonLinear/Results/rfMRI_REST1_RL', 'rfMRI_REST1_RL_Atlas_MSMAll_hp2000_clean_rclean_tclean.dtseries.nii'));
+% Load dtseries (MSMSulc registration; Krishnan data is T1w-only so no MSMAll)
+C = ft_read_cifti_mod(fullfile(BaseDir, Subject, 'MNINonLinear/Results', fMRIRun, [fMRIRun '_Atlas_hp2000_clean.dtseries.nii']));
 
 
 %load([Subdir '/func/rest/ConcatenatedCiftis/FD.mat']);
@@ -29,16 +29,17 @@ C.data = single(C.data); % remove high motion volumes, convert to single type;
 OutDir = fullfile(BaseDir, Subject, 'mshbm_output');
 mkdir(OutDir);
 
-%% PFM with MS-HBM:
+% PFM with MS-HBM:
 
 PriorWeight = 1; % this controls how much weight the spatial priors impose
 Smoothness = 10; % controls how likely neighboring vertices are to belong to the same network
 pfm_mshbm(C, MidthickSurfs, OutDir, PriorWeight, Smoothness, Params, Paths);
+addpath(genpath(Paths{2})); % pfm_mshbm removes Paths{2} at exit; restore it
 
-%% Calculate the network sizes:
+% Calculate the network sizes:
 
-D = ft_read_cifti_mod('/home/hanwang/Documents/Data/ucl/gos_ich/hcp_example_data/100307/mshbm_output/MS-HBM_FunctionalNetworks_VertexWiseThresh0.01_w1_c10.dlabel.nii');
-VA= ft_read_cifti_mod('/home/hanwang/Documents/Data/ucl/gos_ich/hcp_example_data/100307/mshbm_output/MS-HBM_FunctionalNetworks_VertexWiseThresh0.01_w1_c10.dtseries.nii');
+D = ft_read_cifti_mod(fullfile(OutDir, 'MS-HBM_FunctionalNetworks_VertexWiseThresh0.01_w1_c10.dlabel.nii'));
+VA= ft_read_cifti_mod(fullfile(OutDir, 'MS-HBM_FunctionalNetworks_VertexWiseThresh0.01_w1_c10.dtseries.nii'));
 Structures = {'CORTEX_LEFT','CORTEX_RIGHT'}; % in this case, cortex only.
 NetworkSize = pfm_calculate_network_size(D,VA,Structures);
 

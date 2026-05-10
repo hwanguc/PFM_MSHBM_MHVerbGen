@@ -1,0 +1,132 @@
+[Warning: Function assert has the same name as a MATLAB built-in. We suggest you
+rename the function to avoid a potential name conflict.] 
+[> In path (line 109)
+In addpath (line 96)] 
+[Warning: Function assert has the same name as a MATLAB built-in. We suggest you
+rename the function to avoid a potential name conflict.] 
+[> In path (line 109)
+In addpath (line 96)] 
+isnan: 8263276 out of 96371272
+avg. threshold: 0.32001
+Session 1...It is subj 1...
+read data...DONE!
+Inter-region iteration 1 ...
+It is EM iteration.. 1..
+M-step..
+EM 1 | M 1: kappa min/mean/max = 333.5933 / 333.5933 / 333.5933 | relΔ = 0.000e+00
+           kappa(1:5) = [333.6 333.6 333.6 333.6 333.6]
+EM 1 | M 2: kappa min/mean/max = 637.2212 / 637.2212 / 637.2212 | relΔ = 0.000e+00
+           kappa(1:5) = [637.2 637.2 637.2 637.2 637.2]
+EM 1 | M 3: kappa min/mean/max = 638.4638 / 638.4638 / 638.4638 | relΔ = 0.000e+00
+           kappa(1:5) = [638.5 638.5 638.5 638.5 638.5]
+EM 1 | M 4: kappa min/mean/max = 638.4661 / 638.4661 / 638.4661 | relΔ = 0.000e+00
+           kappa(1:5) = [638.5 638.5 638.5 638.5 638.5]
+Estep..
+It is EM iteration.. 2..
+M-step..
+EM 2 | M 1: kappa min/mean/max = 605.4616 / 605.4616 / 605.4616 | relΔ = 0.000e+00
+           kappa(1:5) = [605.5 605.5 605.5 605.5 605.5]
+EM 2 | M 2: kappa min/mean/max = 629.6517 / 629.6517 / 629.6517 | relΔ = 0.000e+00
+           kappa(1:5) = [629.7 629.7 629.7 629.7 629.7]
+EM 2 | M 3: kappa min/mean/max = 629.6920 / 629.6920 / 629.6920 | relΔ = 0.000e+00
+           kappa(1:5) = [629.7 629.7 629.7 629.7 629.7]
+Estep..
+It is EM iteration.. 3..
+M-step..
+EM 3 | M 1: kappa min/mean/max = 637.5533 / 637.5533 / 637.5533 | relΔ = 0.000e+00
+           kappa(1:5) = [637.6 637.6 637.6 637.6 637.6]
+EM 3 | M 2: kappa min/mean/max = 641.3812 / 641.3812 / 641.3812 | relΔ = 0.000e+00
+           kappa(1:5) = [641.4 641.4 641.4 641.4 641.4]
+EM 3 | M 3: kappa min/mean/max = 641.3868 / 641.3868 / 641.3868 | relΔ = 0.000e+00
+           kappa(1:5) = [641.4 641.4 641.4 641.4 641.4]
+Estep..
+It is EM iteration.. 4..
+M-step..
+EM 4 | M 1: kappa min/mean/max = 644.1313 / 644.1313 / 644.1313 | relΔ = 0.000e+00
+           kappa(1:5) = [644.1 644.1 644.1 644.1 644.1]
+EM 4 | M 2: kappa min/mean/max = 645.2099 / 645.2099 / 645.2099 | relΔ = 0.000e+00
+           kappa(1:5) = [645.2 645.2 645.2 645.2 645.2]
+EM 4 | M 3: kappa min/mean/max = 645.2114 / 645.2114 / 645.2114 | relΔ = 0.000e+00
+           kappa(1:5) = [645.2 645.2 645.2 645.2 645.2]
+Estep..
+It is EM iteration.. 5..
+M-step..
+EM 5 | M 1: kappa min/mean/max = 646.6924 / 646.6924 / 646.6924 | relΔ = 0.000e+00
+           kappa(1:5) = [646.7 646.7 646.7 646.7 646.7]
+EM 5 | M 2: kappa min/mean/max = 647.2267 / 647.2267 / 647.2267 | relΔ = 0.000e+00
+           kappa(1:5) = [647.2 647.2 647.2 647.2 647.2]
+EM 5 | M 3: kappa min/mean/max = 647.2275 / 647.2275 / 647.2275 | relΔ = 0.000e+00
+           kappa(1:5) = [647.2 647.2 647.2 647.2 647.2]
+Estep..
+EM..Done
+Intra-subject variability level...
+It is inter interation 1 intra iteration 1..update s_psi and sigma..
+Inter-region iteration 2 ...
+It is EM iteration.. 1..
+M-step..
+EM 1 | M 1: kappa min/mean/max = 269.1595 / 269.1595 / 269.1595 | relΔ = 0.000e+00
+           kappa(1:5) = [269.2 269.2 269.2 269.2 269.2]
+EM 1 | M 2: kappa min/mean/max = 649.1664 / 649.1664 / 649.1664 | relΔ = 0.000e+00
+           kappa(1:5) = [649.2 649.2 649.2 649.2 649.2]
+EM 1 | M 3: kappa min/mean/max = 649.2056 / 649.2056 / 649.2056 | relΔ = 0.000e+00
+           kappa(1:5) = [649.2 649.2 649.2 649.2 649.2]
+Estep..
+It is EM iteration.. 2..
+M-step..
+EM 2 | M 1: kappa min/mean/max = 650.2515 / 650.2515 / 650.2515 | relΔ = 0.000e+00
+           kappa(1:5) = [650.3 650.3 650.3 650.3 650.3]
+EM 2 | M 2: kappa min/mean/max = 650.6374 / 650.6374 / 650.6374 | relΔ = 0.000e+00
+           kappa(1:5) = [650.6 650.6 650.6 650.6 650.6]
+EM 2 | M 3: kappa min/mean/max = 650.6374 / 650.6374 / 650.6374 | relΔ = 0.000e+00
+           kappa(1:5) = [650.6 650.6 650.6 650.6 650.6]
+Estep..
+EM..Done
+Intra-subject variability level...
+It is inter interation 1 intra iteration 1..update s_psi and sigma..
+Inter-region iteration 3 ...
+It is EM iteration.. 1..
+M-step..
+EM 1 | M 1: kappa min/mean/max = 267.0062 / 267.0062 / 267.0062 | relΔ = 0.000e+00
+           kappa(1:5) = [267 267 267 267 267]
+EM 1 | M 2: kappa min/mean/max = 651.8235 / 651.8235 / 651.8235 | relΔ = 0.000e+00
+           kappa(1:5) = [651.8 651.8 651.8 651.8 651.8]
+EM 1 | M 3: kappa min/mean/max = 651.8454 / 651.8454 / 651.8454 | relΔ = 0.000e+00
+           kappa(1:5) = [651.8 651.8 651.8 651.8 651.8]
+Estep..
+It is EM iteration.. 2..
+M-step..
+EM 2 | M 1: kappa min/mean/max = 652.6746 / 652.6746 / 652.6746 | relΔ = 0.000e+00
+           kappa(1:5) = [652.7 652.7 652.7 652.7 652.7]
+EM 2 | M 2: kappa min/mean/max = 652.9329 / 652.9329 / 652.9329 | relΔ = 0.000e+00
+           kappa(1:5) = [652.9 652.9 652.9 652.9 652.9]
+EM 2 | M 3: kappa min/mean/max = 652.9329 / 652.9329 / 652.9329 | relΔ = 0.000e+00
+           kappa(1:5) = [652.9 652.9 652.9 652.9 652.9]
+Estep..
+EM..Done
+Intra-subject variability level...
+It is inter interation 1 intra iteration 1..update s_psi and sigma..
+Inter-region iteration 4 ...
+It is EM iteration.. 1..
+M-step..
+EM 1 | M 1: kappa min/mean/max = 265.4801 / 265.4801 / 265.4801 | relΔ = 0.000e+00
+           kappa(1:5) = [265.5 265.5 265.5 265.5 265.5]
+EM 1 | M 2: kappa min/mean/max = 653.6511 / 653.6511 / 653.6511 | relΔ = 0.000e+00
+           kappa(1:5) = [653.7 653.7 653.7 653.7 653.7]
+EM 1 | M 3: kappa min/mean/max = 653.6699 / 653.6699 / 653.6699 | relΔ = 0.000e+00
+           kappa(1:5) = [653.7 653.7 653.7 653.7 653.7]
+Estep..
+It is EM iteration.. 2..
+M-step..
+EM 2 | M 1: kappa min/mean/max = 654.0914 / 654.0914 / 654.0914 | relΔ = 0.000e+00
+           kappa(1:5) = [654.1 654.1 654.1 654.1 654.1]
+EM 2 | M 2: kappa min/mean/max = 654.1982 / 654.1982 / 654.1982 | relΔ = 0.000e+00
+           kappa(1:5) = [654.2 654.2 654.2 654.2 654.2]
+EM 2 | M 3: kappa min/mean/max = 654.1982 / 654.1982 / 654.1982 | relΔ = 0.000e+00
+           kappa(1:5) = [654.2 654.2 654.2 654.2 654.2]
+Estep..
+EM..Done
+Intra-subject variability level...
+It is inter interation 1 intra iteration 1..update s_psi and sigma..
+{Error using eval
+Unrecognized function or variable 'pfm_calculate_network_size'.
+} 

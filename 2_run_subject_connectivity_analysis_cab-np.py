@@ -1,5 +1,5 @@
 """
-single_subject.py
+2_run_subject_connectivity_analysis_cab-np.py
 
 ## Author: Han Wang
 ### 8 May 2026: Initial version
@@ -21,14 +21,14 @@ from matplotlib.patches import Rectangle
 # ============================================================
 # CONFIG
 # ============================================================
-SUBJ = "100307"
+SUBJ = "sub-509BT"
 PROJECT_DIR = "/home/hanwang/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen"
 
-FC_FILE       = f"{PROJECT_DIR}/derivatives/fc/sub-{SUBJ}_FC.txt"
+FC_FILE       = f"{PROJECT_DIR}/derivatives/fc/{SUBJ}_FC.txt"
 CABNP_LABELS  = f"{PROJECT_DIR}/derivatives/cabnp_labels.txt"
 CABNP_KEY     = f"{PROJECT_DIR}/atlas/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR_LabelKey.txt"
 
-OUTDIR = f"{PROJECT_DIR}/results/sub-{SUBJ}"
+OUTDIR = f"{PROJECT_DIR}/results/{SUBJ}"
 os.makedirs(OUTDIR, exist_ok=True)
 
 # ============================================================
@@ -240,9 +240,9 @@ cbar = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.03)
 cbar.set_label("Pearson's r", fontsize=11)
 ax.set_title(f"Subject {SUBJ} — Per-parcel FC", fontsize=13, pad=20)
 plt.tight_layout()
-plt.savefig(f"{OUTDIR}/01_full_ROI_FC_1.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"{OUTDIR}/01_full_ROI_FC_3.png", dpi=300, bbox_inches="tight")
 plt.close()
-print(f"  Saved: {OUTDIR}/01_full_ROI_FC_1.png")
+print(f"  Saved: {OUTDIR}/01_full_ROI_FC_3.png")
 
 # ============================================================
 # FIGURE 2: Collapsed-by-region heatmap (6×6)
@@ -296,9 +296,9 @@ cbar.set_label("Pearson's r", fontsize=11)
 ax.set_title(f"Subject {SUBJ} — Region-level FC\n(values averaged in Fisher-z space)",
              fontsize=12)
 plt.tight_layout()
-plt.savefig(f"{OUTDIR}/02_collapsed_FC_1.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"{OUTDIR}/02_collapsed_FC_3.png", dpi=300, bbox_inches="tight")
 plt.close()
-print(f"  Saved: {OUTDIR}/02_collapsed_FC_1.png")
+print(f"  Saved: {OUTDIR}/02_collapsed_FC_3.png")
 
 # ============================================================
 # FIGURE 3: Frontostriatal heatmap (cortex × subcortex only)
@@ -343,16 +343,16 @@ ax.set_xlabel("Cortical zone", fontsize=11)
 ax.set_ylabel("Subcortical structure", fontsize=11)
 ax.set_title(f"Subject {SUBJ} — Frontostriatal FC", fontsize=12)
 plt.tight_layout()
-plt.savefig(f"{OUTDIR}/03_frontostriatal_FC_1.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"{OUTDIR}/03_frontostriatal_FC_3.png", dpi=300, bbox_inches="tight")
 plt.close()
-print(f"  Saved: {OUTDIR}/03_frontostriatal_FC_1.png")
+print(f"  Saved: {OUTDIR}/03_frontostriatal_FC_3.png")
 
 # ============================================================
 # Save numeric values + Lynch-style edges printout
 # ============================================================
 collapsed_df = pd.DataFrame(collapsed, index=REGION_ORDER, columns=REGION_ORDER)
-collapsed_df.to_csv(f"{OUTDIR}/sub-{SUBJ}_FC_values_1.csv")
-print(f"\n  Saved: {OUTDIR}/sub-{SUBJ}_FC_values_1.csv")
+collapsed_df.to_csv(f"{OUTDIR}/{SUBJ}_FC_values_3.csv")
+print(f"\n  Saved: {OUTDIR}/{SUBJ}_FC_values_3.csv")
 
 print("\n" + "=" * 50)
 print("Lynch-style frontostriatal edges (Pearson's r):")
