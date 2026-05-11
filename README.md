@@ -1,6 +1,6 @@
 # PFM_MSHBM_MHVerbGen
 
-**Author: Han Wang (2016)**
+**Author: Han Wang (2025)**
 
 This respiratory contains the codes for precision functional mapping (PFM; [Gorden et al., 2017](https://www.cell.com/neuron/fulltext/S0896-6273(17)30613-X)) and functional connectivity (FC) analyses for data from [Krishnan et al. (2021)](https://www.sciencedirect.com/science/article/pii/S1053811920310843). The PFM is based on a multi-session hierarchical Bayesian model (MS-HBM) pipeline developed by [Kong et al. (2019)](https://academic.oup.com/cercor/article/29/6/2533/5033556?login=false). The current pipeline generates brain network parcellation on a single participant whose resting-state data has been pre-processed using the [Human Connectome Project (HCP) pipeline](https://github.com/Washington-University/HCPpipelines) with a denoising procedure using the [ICA-FIX](https://fsl.fmrib.ox.ac.uk/fsl/docs/resting_state/fix.html) pipeline.
 
