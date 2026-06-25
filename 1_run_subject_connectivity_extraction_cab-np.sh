@@ -19,7 +19,12 @@ DTSERIES=/home/hanwang/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed/${
 
 
 PROJECT_DIR=/home/hanwang/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen
-ATLAS=${PROJECT_DIR}/atlas/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR.dlabel.nii
+# CAB-NP with anterior (precommissural, MNI Y>=4) Caudate/Putamen relabelled as
+# single head ROIs (L/R-Caudate-head, L/R-Putamen-head), matching the anterior
+# striatal foci reported by Lynch et al. (2024). Only Caudate/Putamen voxels are
+# re-carved; cortical parcels and NAcc are identical to stock CAB-NP.
+# Built by build_anterior_striatum_atlas.py.
+ATLAS=${PROJECT_DIR}/atlas/CABNP_anteriorStriatum_Y4.dlabel.nii
 OUTDIR=${PROJECT_DIR}/derivatives/fc
 
 mkdir -p ${OUTDIR}

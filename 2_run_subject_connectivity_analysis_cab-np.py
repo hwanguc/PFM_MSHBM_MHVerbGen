@@ -31,6 +31,10 @@ CABNP_KEY     = f"{PROJECT_DIR}/atlas/CortexSubcortex_ColeAnticevic_NetPartition
 OUTDIR = f"{PROJECT_DIR}/results/{SUBJ}"
 os.makedirs(OUTDIR, exist_ok=True)
 
+# Tag appended to every output filename. Keeps anterior-striatum results separate
+# from the earlier whole-Caudate/Putamen runs (e.g. *_3_rest.png).
+OUT_SUFFIX = "_3_rest_antstri"
+
 # ============================================================
 # ROI definitions — using Glasser names (translated automatically)
 # ============================================================
@@ -70,12 +74,16 @@ ROI_GROUPS_GLASSER = {
 
 
 
-# Subcortical: aggregate all parcels for each anatomical structure
-# (CAB-NP splits each structure across multiple networks)
+# Subcortical ROIs.
+#   NAcc: aggregate all CAB-NP accumbens parcels (split across networks).
+#   Caudate / Putamen: use the single anterior (precommissural, MNI Y>=4) "head"
+#     ROIs from atlas/CABNP_anteriorStriatum_Y4.dlabel.nii, matching the anterior
+#     striatal foci in Lynch et al. (2024). These names match exactly (one parcel
+#     per pattern), so "contains" matching is unambiguous.
 SUBCORTICAL_PATTERNS = {
     "NAcc":    ["_L-Accumbens", "_R-Accumbens"],
-    "Caudate": ["_L-Caudate",   "_R-Caudate"],
-    "Putamen": ["_L-Putamen",   "_R-Putamen"],
+    "Caudate": ["L-Caudate-head", "R-Caudate-head"],
+    "Putamen": ["L-Putamen-head", "R-Putamen-head"],
 }
 
 CORTICAL_REGIONS    = list(ROI_GROUPS_GLASSER.keys())
@@ -240,9 +248,9 @@ cbar = fig.colorbar(im, ax=ax, fraction=0.04, pad=0.03)
 cbar.set_label("Pearson's r", fontsize=11)
 ax.set_title(f"Subject {SUBJ} — Per-parcel FC", fontsize=13, pad=20)
 plt.tight_layout()
-plt.savefig(f"{OUTDIR}/01_full_ROI_FC_3_rest.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"{OUTDIR}/01_full_ROI_FC{OUT_SUFFIX}.png", dpi=300, bbox_inches="tight")
 plt.close()
-print(f"  Saved: {OUTDIR}/01_full_ROI_FC_3_rest.png")
+print(f"  Saved: {OUTDIR}/01_full_ROI_FC{OUT_SUFFIX}.png")
 
 # ============================================================
 # FIGURE 2: Collapsed-by-region heatmap (6×6)
@@ -296,9 +304,9 @@ cbar.set_label("Pearson's r", fontsize=11)
 ax.set_title(f"Subject {SUBJ} — Region-level FC\n(values averaged in Fisher-z space)",
              fontsize=12)
 plt.tight_layout()
-plt.savefig(f"{OUTDIR}/02_collapsed_FC_3_rest.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"{OUTDIR}/02_collapsed_FC{OUT_SUFFIX}.png", dpi=300, bbox_inches="tight")
 plt.close()
-print(f"  Saved: {OUTDIR}/02_collapsed_FC_3_rest.png")
+print(f"  Saved: {OUTDIR}/02_collapsed_FC{OUT_SUFFIX}.png")
 
 # ============================================================
 # FIGURE 3: Frontostriatal heatmap (cortex × subcortex only)
@@ -343,16 +351,16 @@ ax.set_xlabel("Cortical zone", fontsize=11)
 ax.set_ylabel("Subcortical structure", fontsize=11)
 ax.set_title(f"Subject {SUBJ} — Frontostriatal FC", fontsize=12)
 plt.tight_layout()
-plt.savefig(f"{OUTDIR}/03_frontostriatal_FC_3_rest.png", dpi=300, bbox_inches="tight")
+plt.savefig(f"{OUTDIR}/03_frontostriatal_FC{OUT_SUFFIX}.png", dpi=300, bbox_inches="tight")
 plt.close()
-print(f"  Saved: {OUTDIR}/03_frontostriatal_FC_3_rest.png")
+print(f"  Saved: {OUTDIR}/03_frontostriatal_FC{OUT_SUFFIX}.png")
 
 # ============================================================
 # Save numeric values + Lynch-style edges printout
 # ============================================================
 collapsed_df = pd.DataFrame(collapsed, index=REGION_ORDER, columns=REGION_ORDER)
-collapsed_df.to_csv(f"{OUTDIR}/{SUBJ}_FC_values_3_rest.csv")
-print(f"\n  Saved: {OUTDIR}/{SUBJ}_FC_values_3_rest.csv")
+collapsed_df.to_csv(f"{OUTDIR}/{SUBJ}_FC_values{OUT_SUFFIX}.csv")
+print(f"\n  Saved: {OUTDIR}/{SUBJ}_FC_values{OUT_SUFFIX}.csv")
 
 print("\n" + "=" * 50)
 print("Lynch-style frontostriatal edges (Pearson's r):")
