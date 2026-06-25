@@ -1,6 +1,27 @@
 # ============================================================
-# Project-specific: data, derivatives, results
+# Project-specific: data, derivatives
 # ============================================================
 derivatives/
-results/sub-100307
 
+# ============================================================
+# Results: ignore everything under results/ EXCEPT the key
+# group-level figures that summarise the analysis.
+# ============================================================
+results/*
+
+# Group-level network-size figures
+!results/network_size/
+results/network_size/*
+!results/network_size/emotional_by_group.png
+!results/network_size/emotional_vs_salience.png
+!results/network_size/group_networksize_DLD.png
+!results/network_size/group_networksize_TD.png
+
+# Bulky MS-HBM run transcript
+results/network_size/run_group_mshbm_live.log
+
+# Single-subject figures (keep all PNG/JPG, ignore the rest)
+!results/sub-509BT/
+results/sub-509BT/*
+!results/sub-509BT/*.png
+!results/sub-509BT/*.jpg
