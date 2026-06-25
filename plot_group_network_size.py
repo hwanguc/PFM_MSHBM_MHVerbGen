@@ -7,9 +7,9 @@ chart per group (DLD/BL and TD/control), where each bar is the group mean
 % cortical surface for a network and the error bar is the standard error of the
 mean (SEM) across subjects.
 
-Inputs  (from combine_network_size.py / the Priors export):
-    results/network_size/group_network_size_long.csv
-    results/network_size/networks_meta.csv
+Inputs:
+    results/network_size/group_network_size_long.csv  (from combine_network_size.py)
+    res0urces/networks_meta.csv  (network id/label/colour, exported from MS-HBM priors)
 
 Outputs:
     results/network_size/group_networksize_DLD.png
@@ -29,7 +29,7 @@ PROJECT_DIR = "/home/hanwang/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen"
 NS_DIR = f"{PROJECT_DIR}/results/network_size"
 
 LONG = f"{NS_DIR}/group_network_size_long.csv"
-META = f"{NS_DIR}/networks_meta.csv"
+META = f"{PROJECT_DIR}/res0urces/networks_meta.csv"
 
 # Groups to plot: spreadsheet label -> (nice title, output tag)
 GROUPS = {

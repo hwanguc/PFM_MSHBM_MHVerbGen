@@ -55,7 +55,7 @@ python3 stats_group_network_size.py    # -> results/network_size/group_stats_DLD
 **Notes**
 - MS-HBM here is **cortex-only** (`Structures = {'CORTEX_LEFT','CORTEX_RIGHT'}`). Network sizes are % of cortical surface; per subject they sum to 100% across the 21 networks (incl. `Noise`, which is excluded from the plots).
 - `run_group_mshbm.m` writes a `run_group_mshbm_log.csv` (per-subject success/failure). Stream live progress with `tail -f results/network_size/run_group_mshbm_live.log`.
-- `networks_meta.csv` (network id / label / colour, exported from the MS-HBM priors) drives the plot colours and labels.
+- `res0urces/networks_meta.csv` (network id / label / colour, exported from the MS-HBM priors) drives the plot colours and labels.
 
 **Exploratory mood analyses** (using the SDQ scores in the spreadsheet):
 - `stats_emotional_salience.py` — group comparison of SDQ emotional symptoms (ANOVA + Welch + Kruskal-Wallis + Tukey) and within-group correlation of emotional symptoms with Salience-network size.
