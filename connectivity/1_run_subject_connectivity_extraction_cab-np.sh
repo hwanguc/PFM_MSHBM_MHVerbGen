@@ -13,9 +13,12 @@ set -e
 # CONFIG
 # ============================================================
 SUBJ=$1
-# Krishnan et al. (2021) data processed with adapted HCP pipeline (MSMSulc, no MSMAll)
-#DTSERIES=/home/hanwang/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed/${SUBJ}/MNINonLinear/Results/rfMRI_VERBGEN_AP/rfMRI_VERBGEN_AP_Atlas_hp2000_clean.dtseries.nii
-DTSERIES=/home/hanwang/Documents/Data/ucl/gos_ich/verb_gen_krishnan/processed/${SUBJ}/MNINonLinear/Results/rfMRI_VERBGEN_AP_rest/rfMRI_VERBGEN_AP_rest_Atlas_hp2000_clean.dtseries.nii
+# Krishnan et al. (2021) data processed with adapted HCP pipeline (MSMSulc, no MSMAll).
+# Pre-processed outputs were moved to /media/hanwang/Data to save space (2026-06).
+DATA_ROOT=/media/hanwang/Data/Data/ucl/gos_ich/verb_gen_krishnan/processed
+# Rest-only run (MS-HBM uses the full rfMRI_VERBGEN_AP run instead).
+#DTSERIES=${DATA_ROOT}/${SUBJ}/MNINonLinear/Results/rfMRI_VERBGEN_AP/rfMRI_VERBGEN_AP_Atlas_hp2000_clean.dtseries.nii
+DTSERIES=${DATA_ROOT}/${SUBJ}/MNINonLinear/Results/rfMRI_VERBGEN_AP_rest/rfMRI_VERBGEN_AP_rest_Atlas_hp2000_clean.dtseries.nii
 
 
 PROJECT_DIR=/home/hanwang/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen

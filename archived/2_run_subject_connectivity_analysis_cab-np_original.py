@@ -13,34 +13,22 @@ translates them to CAB-NP names by reading the official label key file
 """
 
 import os
-import argparse
 import numpy as np
 import pandas as pd
-import matplotlib
-matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Rectangle
 
 # ============================================================
 # CONFIG
 # ============================================================
+SUBJ = "sub-509BT"
 PROJECT_DIR = "/home/hanwang/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen"
-
-parser = argparse.ArgumentParser(
-    description="ROI FC analysis/figures for one subject (CAB-NP anterior-striatum atlas).")
-parser.add_argument("subject", nargs="?", default="sub-509BT",
-                    help="subject id, e.g. sub-509BT (default: sub-509BT)")
-parser.add_argument("--outbase", default="results/connectivity_outputs",
-                    help="output dir is <PROJECT_DIR>/<outbase>/<subject> "
-                         "(default: results/connectivity_outputs)")
-args = parser.parse_args()
-SUBJ = args.subject
 
 FC_FILE       = f"{PROJECT_DIR}/derivatives/fc/{SUBJ}_FC.txt"
 CABNP_LABELS  = f"{PROJECT_DIR}/derivatives/cabnp_labels.txt"
 CABNP_KEY     = f"{PROJECT_DIR}/atlas/CortexSubcortex_ColeAnticevic_NetPartition_wSubcorGSR_parcels_LR_LabelKey.txt"
 
-OUTDIR = f"{PROJECT_DIR}/{args.outbase}/{SUBJ}"
+OUTDIR = f"{PROJECT_DIR}/results/{SUBJ}"
 os.makedirs(OUTDIR, exist_ok=True)
 
 # Tag appended to every output filename. Keeps anterior-striatum results separate
@@ -370,17 +358,9 @@ print(f"  Saved: {OUTDIR}/03_frontostriatal_FC{OUT_SUFFIX}.png")
 # ============================================================
 # Save numeric values + Lynch-style edges printout
 # ============================================================
-# Fig 2 data: collapsed region x region matrix (Pearson's r, Fisher-z averaged).
 collapsed_df = pd.DataFrame(collapsed, index=REGION_ORDER, columns=REGION_ORDER)
-collapsed_df.index.name = "region"
-collapsed_df.to_csv(f"{OUTDIR}/{SUBJ}_02_collapsed_FC{OUT_SUFFIX}.csv")
-print(f"\n  Saved: {OUTDIR}/{SUBJ}_02_collapsed_FC{OUT_SUFFIX}.csv")
-
-# Fig 3 data: frontostriatal subcortical(rows) x cortical(cols) matrix.
-fs_df = pd.DataFrame(frontostriatal, index=SUBCORTICAL_REGIONS, columns=CORTICAL_REGIONS)
-fs_df.index.name = "subcortical"
-fs_df.to_csv(f"{OUTDIR}/{SUBJ}_03_frontostriatal_FC{OUT_SUFFIX}.csv")
-print(f"  Saved: {OUTDIR}/{SUBJ}_03_frontostriatal_FC{OUT_SUFFIX}.csv")
+collapsed_df.to_csv(f"{OUTDIR}/{SUBJ}_FC_values{OUT_SUFFIX}.csv")
+print(f"\n  Saved: {OUTDIR}/{SUBJ}_FC_values{OUT_SUFFIX}.csv")
 
 print("\n" + "=" * 50)
 print("Lynch-style frontostriatal edges (Pearson's r):")

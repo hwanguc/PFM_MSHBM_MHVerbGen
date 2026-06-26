@@ -77,8 +77,9 @@ Extracts and visualises frontostriatal FC, with the Caudate and Putamen restrict
 | Script | Role |
 | --- | --- |
 | `connectivity/build_anterior_striatum_atlas.py` | Build `atlas/CABNP_anteriorStriatum_Y4.dlabel.nii` — stock CAB-NP with anterior (precommissural, MNI **Y ≥ 4**) Caudate/Putamen voxels relabelled into single `L/R-Caudate-head` and `L/R-Putamen-head` ROIs. Cortical parcels and NAcc are left identical to stock CAB-NP. |
-| `connectivity/1_run_subject_connectivity_extraction_cab-np.sh` | Parcellate a subject's dtseries with the custom atlas (`wb_command`) and export a Fisher-z FC matrix. |
-| `connectivity/2_run_subject_connectivity_analysis_cab-np.py` | ROI FC analysis/figures: ACC, anterior insula (AI), lateral PFC (LPFC) cortical zones × NAcc / anterior-Caudate / anterior-Putamen. |
+| `connectivity/1_run_subject_connectivity_extraction_cab-np.sh` | Parcellate a subject's dtseries with the custom atlas (`wb_command`) and export a Fisher-z FC matrix to `derivatives/fc/<sub>_FC.txt`. |
+| `connectivity/2_run_subject_connectivity_analysis_cab-np.py` | ROI FC analysis/figures: ACC, anterior insula (AI), lateral PFC (LPFC) cortical zones × NAcc / anterior-Caudate / anterior-Putamen. Takes the subject id as a CLI arg. |
+| `connectivity/run_group_connectivity.py` | Batch driver: loop the extraction + analysis over all BL+BT subjects (excl. 513BT), writing per-subject outputs to `results/connectivity_outputs/<sub>/`. |
 
 **Usage**
 
@@ -87,11 +88,30 @@ Extracts and visualises frontostriatal FC, with the Caudate and Putamen restrict
 # 1) Build the custom atlas once (only needed if it doesn't exist / threshold changes)
 python3 connectivity/build_anterior_striatum_atlas.py
 
-# 2) Extract the FC matrix for a subject (uses the custom atlas)
+# --- single subject ---
+# 2) Extract the FC matrix (uses the custom atlas)
 ./connectivity/1_run_subject_connectivity_extraction_cab-np.sh sub-509BT
+# 3) Analyse / plot ROI FC for that subject
+python3 connectivity/2_run_subject_connectivity_analysis_cab-np.py sub-509BT
 
-# 3) Analyse / plot ROI FC (edit SUBJ at the top of the script)
-python3 connectivity/2_run_subject_connectivity_analysis_cab-np.py
+# --- whole BL+BT cohort (36 subjects, ~3 min) ---
+python3 connectivity/run_group_connectivity.py                 # re-extract everyone
+python3 connectivity/run_group_connectivity.py --skip-existing # skip extraction if FC.txt exists
+# stream progress:  tail -f results/connectivity_outputs/run_group_connectivity_live.log
+```
+
+**Per-subject outputs** (in `results/connectivity_outputs/<sub>/`, suffix `_3_rest_antstri`):
+- `01_full_ROI_FC…png` — per-parcel heatmap; `02_collapsed_FC…png` — region×region; `03_frontostriatal_FC…png` — subcortical×cortical.
+- `<sub>_02_collapsed_FC…csv` — the fig-2 6×6 region matrix (Pearson r, Fisher-z averaged).
+- `<sub>_03_frontostriatal_FC…csv` — the fig-3 subcortical(rows)×cortical(cols) matrix, for group analysis.
+
+**Group-level analysis** (in `stats/`, over the 9 frontostriatal tiles; all testing is done in **Fisher-z** and only displayed means are back-transformed to r):
+- `stats/stats_group_connectivity.py` — DLD-vs-TD per tile (Welch t on Fisher-z, Mann-Whitney, Cohen's d, BH-FDR). Gathers the per-subject `…_03_frontostriatal…csv` into `group_frontostriatal_long.csv` (so no separate combine step), then writes group-mean and DLD−TD t-stat heatmaps.
+- `stats/stats_connectivity_emotional_nb.py` — group × FC interaction predicting SDQ-emotional, one **negative-binomial** model per tile (`emotional ~ C(group)*FCz_c`), matching the salience-size NB model; LR-tested interaction, BH-FDR, interaction heatmap + per-tile NB-predicted scatter.
+
+```bash
+python3 stats/stats_group_connectivity.py          # group difference per tile
+python3 stats/stats_connectivity_emotional_nb.py   # group x FC -> emotional (NB)
 ```
 
 **Notes**
@@ -114,4 +134,4 @@ results/       per-subject and group outputs (mostly git-ignored)
 
 **_./res0urces/_** — helper functions and CIFTI read/write, from the [MSCcodebase](https://github.com/MidnightScanClub/MSCcodebase).
 
-**_./archived/_** — superseded scripts kept for reference (e.g. the original single-subject `run_subject_mshbm`).
+**_./archived/_** — superseded scripts kept for reference (e.g. the original single-subject `run_subject_mshbm`, and `stats_group_connectivity_emotional.py` — the OLS `FCz ~ group*emotional` flip, dropped in favour of the salience-consistent NB `emotional ~ group*FCz` in `stats/stats_connectivity_emotional_nb.py`).
