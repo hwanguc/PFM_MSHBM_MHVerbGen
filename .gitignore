@@ -16,6 +16,15 @@ results/network_size/*
 !results/network_size/emotional_vs_salience.png
 !results/network_size/group_networksize_DLD.png
 !results/network_size/group_networksize_TD.png
+!results/network_size/emotional_vs_salience_nb.png
+
+
+!results/connectivity_outputs/
+results/connectivity_outputs/*
+!results/connectivity_outputs/connectivity_emotional_nb_interaction.png
+!results/connectivity_outputs/group_frontostriatal_diff_tstat.png
+!results/connectivity_outputs/group_frontostriatal_mean.png
+!results/connectivity_outputs/connectivity_emotional_nb_scatter.png
 
 # Bulky MS-HBM run transcript
 results/network_size/run_group_mshbm_live.log
