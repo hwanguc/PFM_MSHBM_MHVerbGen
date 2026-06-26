@@ -26,16 +26,20 @@ Maps individual functional networks per subject and aggregates cortical network 
 
 | Script | Role |
 | --- | --- |
-| `run_subject_mshbm.m` | Run MS-HBM for **one** subject; write per-subject cortical network sizes to `results/network_size/<sub>_networksize.csv`. |
-| `run_group_mshbm.m` | Batch driver: read the spreadsheet, loop over all BL+BT subjects (excl. 513BT), call `run_subject_mshbm` for each. |
-| `combine_network_size.py` | Merge per-subject CSVs into one long table annotated with group. |
-| `plot_group_network_size.py` | Group-level bar charts of network size (mean ± SEM), one per group. |
-| `stats_group_network_size.py` | DLD-vs-TD test per network (Welch t, Mann-Whitney, beta regression; BH-FDR corrected). |
+| `mshbm/run_subject_mshbm.m` | Run MS-HBM for **one** subject; write per-subject cortical network sizes to `results/network_size/<sub>_networksize.csv`. |
+| `mshbm/run_group_mshbm.m` | Batch driver: read the spreadsheet, loop over all BL+BT subjects (excl. 513BT), call `run_subject_mshbm` for each. |
+| `mshbm/combine_network_size.py` | Merge per-subject CSVs into one long table annotated with group. |
+| `mshbm/plot_group_network_size.py` | Group-level bar charts of network size (mean ± SEM), one per group. |
+| `stats/stats_group_network_size.py` | DLD-vs-TD test per network (Welch t, Mann-Whitney, beta regression; BH-FDR corrected). |
 
 **Usage**
 
 ```matlab
-% MATLAB — single subject (runs the EM fit, writes its CSV)
+% MATLAB — run from the mshbm/ folder (or addpath it) so the two .m files
+% resolve each other; both use an absolute ProjectDir internally.
+cd mshbm        % or: addpath('mshbm')
+
+% single subject (runs the EM fit, writes its CSV)
 run_subject_mshbm('sub-509BT')
 
 % Re-export the CSV from an existing fit without re-running EM
@@ -46,10 +50,10 @@ run_group_mshbm
 ```
 
 ```bash
-# Python — after the MATLAB batch finishes
-python3 combine_network_size.py        # -> results/network_size/group_network_size_long.csv
-python3 plot_group_network_size.py     # -> results/network_size/group_networksize_{DLD,TD}.png
-python3 stats_group_network_size.py    # -> results/network_size/group_stats_DLD_vs_TD.csv
+# Python — after the MATLAB batch finishes (run from the repo root)
+python3 mshbm/combine_network_size.py     # -> results/network_size/group_network_size_long.csv
+python3 mshbm/plot_group_network_size.py  # -> results/network_size/group_networksize_{DLD,TD}.png
+python3 stats/stats_group_network_size.py # -> results/network_size/group_stats_DLD_vs_TD.csv
 ```
 
 **Notes**
@@ -57,9 +61,12 @@ python3 stats_group_network_size.py    # -> results/network_size/group_stats_DLD
 - `run_group_mshbm.m` writes a `run_group_mshbm_log.csv` (per-subject success/failure). Stream live progress with `tail -f results/network_size/run_group_mshbm_live.log`.
 - `res0urces/networks_meta.csv` (network id / label / colour, exported from the MS-HBM priors) drives the plot colours and labels.
 
-**Exploratory mood analyses** (using the SDQ scores in the spreadsheet):
+**Exploratory mood analyses** (in `stats/`, using the SDQ scores in the spreadsheet):
 - `stats_emotional_salience.py` — group comparison of SDQ emotional symptoms (ANOVA + Welch + Kruskal-Wallis + Tukey) and within-group correlation of emotional symptoms with Salience-network size.
 - `stats_emotional_salience_interaction.py` — formal group × Salience-size interaction (OLS w/ HC3, Fisher r-to-z, bootstrap).
+- `stats_emotional_salience_nonlinear.py` — non-linear shape exploration (linear vs quadratic vs exponential vs LOESS) with leave-one-out CV.
+- `stats_emotional_salience_glm.py` — bounded-response models that respect the SDQ floor (negative binomial; beta-binomial for the 0–10 ceiling), per group and as an interaction.
+- `stats_emotional_salience_nb_interaction.py` — the headline NB group × Salience interaction model with predicted-mean ± 95% CI figure, plus LR and permutation tests of the interaction.
 
 ---
 
@@ -69,21 +76,22 @@ Extracts and visualises frontostriatal FC, with the Caudate and Putamen restrict
 
 | Script | Role |
 | --- | --- |
-| `build_anterior_striatum_atlas.py` | Build `atlas/CABNP_anteriorStriatum_Y4.dlabel.nii` — stock CAB-NP with anterior (precommissural, MNI **Y ≥ 4**) Caudate/Putamen voxels relabelled into single `L/R-Caudate-head` and `L/R-Putamen-head` ROIs. Cortical parcels and NAcc are left identical to stock CAB-NP. |
-| `1_run_subject_connectivity_extraction_cab-np.sh` | Parcellate a subject's dtseries with the custom atlas (`wb_command`) and export a Fisher-z FC matrix. |
-| `2_run_subject_connectivity_analysis_cab-np.py` | ROI FC analysis/figures: ACC, anterior insula (AI), lateral PFC (LPFC) cortical zones × NAcc / anterior-Caudate / anterior-Putamen. |
+| `connectivity/build_anterior_striatum_atlas.py` | Build `atlas/CABNP_anteriorStriatum_Y4.dlabel.nii` — stock CAB-NP with anterior (precommissural, MNI **Y ≥ 4**) Caudate/Putamen voxels relabelled into single `L/R-Caudate-head` and `L/R-Putamen-head` ROIs. Cortical parcels and NAcc are left identical to stock CAB-NP. |
+| `connectivity/1_run_subject_connectivity_extraction_cab-np.sh` | Parcellate a subject's dtseries with the custom atlas (`wb_command`) and export a Fisher-z FC matrix. |
+| `connectivity/2_run_subject_connectivity_analysis_cab-np.py` | ROI FC analysis/figures: ACC, anterior insula (AI), lateral PFC (LPFC) cortical zones × NAcc / anterior-Caudate / anterior-Putamen. |
 
 **Usage**
 
 ```bash
+# (run from the repo root)
 # 1) Build the custom atlas once (only needed if it doesn't exist / threshold changes)
-python3 build_anterior_striatum_atlas.py
+python3 connectivity/build_anterior_striatum_atlas.py
 
 # 2) Extract the FC matrix for a subject (uses the custom atlas)
-./1_run_subject_connectivity_extraction_cab-np.sh sub-509BT
+./connectivity/1_run_subject_connectivity_extraction_cab-np.sh sub-509BT
 
 # 3) Analyse / plot ROI FC (edit SUBJ at the top of the script)
-python3 2_run_subject_connectivity_analysis_cab-np.py
+python3 connectivity/2_run_subject_connectivity_analysis_cab-np.py
 ```
 
 **Notes**
@@ -91,6 +99,18 @@ python3 2_run_subject_connectivity_analysis_cab-np.py
 - Restricting to the anterior head substantially strengthens the Caudate/Putamen frontostriatal edges relative to the whole-structure ROIs, while leaving cortical and NAcc FC unchanged.
 
 ---
+
+## Repository layout
+
+```
+mshbm/         Pipeline A — individual MS-HBM network mapping (MATLAB + Python)
+connectivity/  Pipeline B — CAB-NP anterior-striatum connectivity
+stats/         group-level and exploratory mood statistics
+res0urces/     helper functions + CIFTI read/write (from the MSCcodebase)
+archived/      superseded scripts kept for reference
+atlas/         custom CAB-NP anterior-striatum dlabel
+results/       per-subject and group outputs (mostly git-ignored)
+```
 
 **_./res0urces/_** — helper functions and CIFTI read/write, from the [MSCcodebase](https://github.com/MidnightScanClub/MSCcodebase).
 
