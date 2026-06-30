@@ -16,8 +16,10 @@ SUBJ=$1
 # Krishnan et al. (2021) data processed with adapted HCP pipeline (MSMSulc, no MSMAll).
 # Pre-processed outputs were moved to /media/hanwang/Data to save space (2026-06).
 DATA_ROOT=/media/hanwang/Data/Data/ucl/gos_ich/verb_gen_krishnan/processed
-# Rest-only run (MS-HBM uses the full rfMRI_VERBGEN_AP run instead).
-#DTSERIES=${DATA_ROOT}/${SUBJ}/MNINonLinear/Results/rfMRI_VERBGEN_AP/rfMRI_VERBGEN_AP_Atlas_hp2000_clean.dtseries.nii
+# Rest-only run (MS-HBM uses the full rfMRI_VERBGEN_AP_full run instead).
+# Re-extracted 2026-06-30: drops the first 25 vols of the session (noise-cancelling
+# headphones still adapting) AND the first 10s of each rest block (HRF spill-over
+# from the preceding task block).
 DTSERIES=${DATA_ROOT}/${SUBJ}/MNINonLinear/Results/rfMRI_VERBGEN_AP_rest/rfMRI_VERBGEN_AP_rest_Atlas_hp2000_clean.dtseries.nii
 
 

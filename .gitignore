@@ -8,6 +8,20 @@ derivatives/
 # group-level figures that summarise the analysis.
 # ============================================================
 results/*
+archived/results*
+
+# Archived pre-25-vol-cut network-size figures (kept for side-by-side comparison
+# on GitHub). Parent dirs must be re-included first since archived/results* above
+# ignores the whole tree and git won't descend into an ignored directory.
+!archived/results_pre25vol_2026-06-30/
+archived/results_pre25vol_2026-06-30/*
+!archived/results_pre25vol_2026-06-30/results_network_size/
+archived/results_pre25vol_2026-06-30/results_network_size/*
+!archived/results_pre25vol_2026-06-30/results_network_size/emotional_by_group.png
+!archived/results_pre25vol_2026-06-30/results_network_size/emotional_vs_salience.png
+!archived/results_pre25vol_2026-06-30/results_network_size/group_networksize_DLD.png
+!archived/results_pre25vol_2026-06-30/results_network_size/group_networksize_TD.png
+!archived/results_pre25vol_2026-06-30/results_network_size/emotional_vs_salience_nb.png
 
 # Group-level network-size figures
 !results/network_size/

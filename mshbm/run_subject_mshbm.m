@@ -43,7 +43,11 @@ load('MSHBM-Priors.mat', 'Params');  % spatial priors + network labels/colors
 % NB: preprocessed data was moved to /media/hanwang/Data to save space.
 % ============================================================
 BaseDir = '/media/hanwang/Data/Data/ucl/gos_ich/verb_gen_krishnan/processed';
-fMRIRun = 'rfMRI_VERBGEN_AP';
+% Full session re-extracted dropping the first 25 vols (noise-cancelling
+% headphones were still adapting to the scanner background noise during that
+% window). Use the '_full' run for MS-HBM (the rest-only '_rest' run is used by
+% the connectivity pipeline).
+fMRIRun = 'rfMRI_VERBGEN_AP_full';
 
 MidthickSurfs{1} = fullfile(BaseDir, Subject, 'MNINonLinear/fsaverage_LR32k', [Subject '.L.midthickness.32k_fs_LR.surf.gii']);
 MidthickSurfs{2} = fullfile(BaseDir, Subject, 'MNINonLinear/fsaverage_LR32k', [Subject '.R.midthickness.32k_fs_LR.surf.gii']);
