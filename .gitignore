@@ -23,28 +23,38 @@ archived/results_pre25vol_2026-06-30/results_network_size/*
 !archived/results_pre25vol_2026-06-30/results_network_size/group_networksize_TD.png
 !archived/results_pre25vol_2026-06-30/results_network_size/emotional_vs_salience_nb.png
 
-# Group-level network-size figures
-!results/network_size/
-results/network_size/*
-!results/network_size/emotional_by_group.png
-!results/network_size/emotional_vs_salience.png
-!results/network_size/group_networksize_DLD.png
-!results/network_size/group_networksize_TD.png
-!results/network_size/emotional_vs_salience_nb.png
+# Top-level findings summary
+results/FINDINGS_summary.md
 
+# Group-level network-size figures + stats, both MS-HBM variants (full / icafix).
+# Whitelist all figures + the 3-group stats CSVs; per-subject CSVs, the long
+# table and the run transcript stay ignored.
+!results/network_size_full/
+results/network_size_full/*
+!results/network_size_full/*.png
+!results/network_size_full/group_stats_3group.csv
+!results/network_size_full/group_posthoc_3group.csv
 
+!results/network_size_icafix/
+results/network_size_icafix/*
+!results/network_size_icafix/*.png
+!results/network_size_icafix/group_stats_3group.csv
+!results/network_size_icafix/group_posthoc_3group.csv
+
+# Group-level connectivity figures + stats (per-subject sub-*/ figures stay ignored,
+# since git won't descend into the un-re-included sub-* dirs).
 !results/connectivity_outputs/
 results/connectivity_outputs/*
-!results/connectivity_outputs/connectivity_emotional_nb_interaction.png
-!results/connectivity_outputs/group_frontostriatal_diff_tstat.png
-!results/connectivity_outputs/group_frontostriatal_mean.png
-!results/connectivity_outputs/connectivity_emotional_nb_scatter.png
-
-# Bulky MS-HBM run transcript
-results/network_size/run_group_mshbm_live.log
+!results/connectivity_outputs/*.png
+!results/connectivity_outputs/group_frontostriatal_omnibus.csv
+!results/connectivity_outputs/group_frontostriatal_posthoc.csv
+!results/connectivity_outputs/connectivity_emotional_nb_stats.csv
 
 # Single-subject figures (keep all PNG/JPG, ignore the rest)
 !results/sub-509BT/
 results/sub-509BT/*
 !results/sub-509BT/*.png
 !results/sub-509BT/*.jpg
+
+# Python virtual environment
+.venv/

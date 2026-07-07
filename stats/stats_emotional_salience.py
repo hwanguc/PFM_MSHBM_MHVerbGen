@@ -13,51 +13,41 @@ Two questions about the SDQ emotional-symptoms score ("emotional"):
     Spearman, with a scatter + per-group regression lines.
 
 Inputs:
-    dat_verbgen_scqsdq_subsample.xlsx  (code, group, emotional)
-    results/network_size/group_network_size_long.csv  (Salience size)
-Outputs:
-    results/network_size/emotional_salience_corr.csv
-    results/network_size/emotional_by_group.png
-    results/network_size/emotional_vs_salience.png
+    dat_verbgen_analysis_144.csv  (code, group, emotional)
+    results/network_size_<variant>/group_network_size_long.csv  (Salience size)
+Outputs (in results/network_size_<variant>/):
+    emotional_salience_corr.csv, emotional_by_group.png, emotional_vs_salience.png
+
+Usage:
+    python3 stats/stats_emotional_salience.py                 # full variant
+    python3 stats/stats_emotional_salience.py --variant icafix
 
 ## Author: Han Wang
 """
 
+import argparse
 import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from scipy import stats
-import statsmodels.api as sm
-from statsmodels.formula.api import ols
-from statsmodels.stats.multicomp import pairwise_tukeyhsd
+import pingouin as pg
 
 PROJECT_DIR = "/home/hanwang/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen"
-NS_DIR = f"{PROJECT_DIR}/results/network_size"
-XLSX = ("/home/hanwang/Documents/Data/ucl/gos_ich/verb_gen_krishnan/"
-        "behavioural_scq_sdq/dat_verbgen_scqsdq_subsample.xlsx")
-GROUP_COLORS = {"DLD": "#d63031", "TD": "#0984e3", "HSL": "#00b894"}
+LISTCSV = ("/home/hanwang/Documents/Data/verb_gen_krishnan/"
+           "behavioural_scq_sdq/dat_verbgen_analysis_144.csv")
+GROUP_COLORS = {"DLD": "#d63031", "HSL": "#2ca02c", "TD": "#0984e3"}
+GROUPS = ["DLD", "HSL", "TD"]
 
-
-def welch_anova(groups):
-    """Welch's one-way ANOVA (does not assume equal variances)."""
-    k = len(groups)
-    n = np.array([len(g) for g in groups])
-    m = np.array([np.mean(g) for g in groups])
-    v = np.array([np.var(g, ddof=1) for g in groups])
-    w = n / v
-    mbar = np.sum(w * m) / np.sum(w)
-    num = np.sum(w * (m - mbar) ** 2) / (k - 1)
-    denom = 1 + (2 * (k - 2) / (k ** 2 - 1)) * np.sum((1 - w / np.sum(w)) ** 2 / (n - 1))
-    F = num / denom
-    df2 = (k ** 2 - 1) / (3 * np.sum((1 - w / np.sum(w)) ** 2 / (n - 1)))
-    p = stats.f.sf(F, k - 1, df2)
-    return F, k - 1, df2, p
-
+ap = argparse.ArgumentParser()
+ap.add_argument("--variant", choices=["full", "icafix"], default="full")
+args = ap.parse_args()
+NS_DIR = f"{PROJECT_DIR}/results/network_size_{args.variant}"
 
 # ------------------------------------------------------------
-beh = pd.read_excel(XLSX)[["code", "group", "emotional"]].dropna(subset=["emotional"])
+beh = pd.read_csv(LISTCSV)[["code", "group", "emotional"]].dropna(subset=["emotional"])
+beh["code"] = beh["code"].astype(str)
 
 print("=" * 64)
 print("(1) EMOTIONAL SYMPTOMS BY GROUP")
@@ -72,14 +62,15 @@ print(f"\nClassic one-way ANOVA:  F({len(arrs)-1},{len(beh)-len(arrs)}) = {F:.3f
 lev_stat, lev_p = stats.levene(*arrs)
 print(f"Levene equal-variance:  W = {lev_stat:.3f},  p = {lev_p:.4g}"
       + ("  (variances UNEQUAL -> prefer Welch/KW)" if lev_p < 0.05 else ""))
-wF, wdf1, wdf2, wp = welch_anova(arrs)
-print(f"Welch's ANOVA:          F({wdf1},{wdf2:.1f}) = {wF:.3f},  p = {wp:.4g}")
+wa = pg.welch_anova(data=beh, dv="emotional", between="group").iloc[0]
+print(f"Welch's ANOVA:          F({wa['ddof1']:.0f},{wa['ddof2']:.1f}) = {wa['F']:.3f},  "
+      f"p = {wa['p_unc']:.4g}")
 H, kp = stats.kruskal(*arrs)
 print(f"Kruskal-Wallis:         H = {H:.3f},  p = {kp:.4g}")
 
-print("\nTukey HSD post-hoc (pairwise):")
-tuk = pairwise_tukeyhsd(beh["emotional"], beh["group"])
-print(tuk.summary())
+print("\nGames-Howell post-hoc (pairwise, unequal variance):")
+gh = pg.pairwise_gameshowell(data=beh, dv="emotional", between="group")
+print(gh[["A", "B", "diff", "se", "T", "pval", "hedges"]].round(4).to_string(index=False))
 
 dld, td = groups["DLD"], groups["TD"]
 t_stat, t_p = stats.ttest_ind(dld, td, equal_var=False)
@@ -97,7 +88,7 @@ sal = sal.rename(columns={"network_size_pct": "salience_pct"})
 dat = sal.merge(beh[["code", "emotional"]], on="code", how="left")
 
 rows = []
-for g in ["DLD", "TD"]:
+for g in GROUPS:
     d = dat[dat["group"] == g]
     r, rp = stats.pearsonr(d["salience_pct"], d["emotional"])
     rho, rhop = stats.spearmanr(d["salience_pct"], d["emotional"])
@@ -118,10 +109,11 @@ print(f"\nSaved: {NS_DIR}/emotional_salience_corr.csv")
 # Figures
 # ------------------------------------------------------------
 fig, ax = plt.subplots(figsize=(5.5, 5))
-order = ["DLD", "TD", "HSL"]
+order = ["DLD", "HSL", "TD"]
 data_box = [groups[g] for g in order if g in groups]
 labs = [g for g in order if g in groups]
-parts = ax.boxplot(data_box, labels=labs, showmeans=True, patch_artist=True)
+parts = ax.boxplot(data_box, showmeans=True, patch_artist=True)
+ax.set_xticks(range(1, len(labs) + 1)); ax.set_xticklabels(labs)
 for patch, g in zip(parts["boxes"], labs):
     patch.set_facecolor(GROUP_COLORS[g]); patch.set_alpha(0.5)
 # jittered points
@@ -134,7 +126,7 @@ plt.tight_layout(); plt.savefig(f"{NS_DIR}/emotional_by_group.png", dpi=200, bbo
 print(f"Saved: {NS_DIR}/emotional_by_group.png")
 
 fig, ax = plt.subplots(figsize=(6, 5))
-for g in ["DLD", "TD"]:
+for g in GROUPS:
     d = dat[dat["group"] == g]
     ax.scatter(d["salience_pct"], d["emotional"], color=GROUP_COLORS[g],
                edgecolor="k", linewidth=0.3, s=40, label=f"{g} (n={len(d)})")

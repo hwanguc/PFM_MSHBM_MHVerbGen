@@ -6,10 +6,19 @@ function sizeFull = run_subject_mshbm(Subject, varargin)
 % Usage:
 %   run_subject_mshbm('sub-509BT')
 %   run_subject_mshbm('sub-509BT', 'SkipIfDone', true)
+%   run_subject_mshbm('sub-509BT', 'Variant', 'icafix')
 %
 %   SkipIfDone (default false): if the MS-HBM dlabel already exists, skip the
 %   (slow) EM fit and just (re)compute the network sizes from the existing
 %   output. Useful for regenerating CSVs without re-running the parcellation.
+%
+%   Variant (default 'full'): which re-extraction of the run to parcellate.
+%     'full'   -> run 'rfMRI_VERBGEN_AP_full' (session minus first 25 vols),
+%                 output dir <sub>/mshbm_output, CSVs results/network_size_full/.
+%     'icafix' -> run 'rfMRI_VERBGEN_AP' (standard ICA+FIX hp2000_clean, all
+%                 vols), output dir <sub>/mshbm_output_pre25vol, CSVs
+%                 results/network_size_icafix/.
+%   Running both gives two comparable network-size sets (25-vol-cut vs not).
 %
 % Returns sizeFull: a 21x1 vector of % cortical surface per network
 % (network id 1..21, 0 for networks absent in this subject).
@@ -21,8 +30,10 @@ if nargin < 1 || isempty(Subject)
 end
 p = inputParser;
 addParameter(p, 'SkipIfDone', false, @(x) islogical(x) || isnumeric(x));
+addParameter(p, 'Variant', 'full', @(x) ischar(x) || isstring(x));
 parse(p, varargin{:});
 SkipIfDone = logical(p.Results.SkipIfDone);
+Variant    = char(p.Results.Variant);
 
 % ============================================================
 % Paths
@@ -40,19 +51,41 @@ load('MSHBM-Priors.mat', 'Params');  % spatial priors + network labels/colors
 
 % ============================================================
 % Subject data (Krishnan et al. 2021, adapted HCP pipeline; MSMSulc, no MSMAll)
-% NB: preprocessed data was moved to /media/hanwang/Data to save space.
+% NB: preprocessed data + MS-HBM outputs live on the 2T internal drive (2026-07),
+% whose mount path contains a space ("Data 001 2T"). pfm_mshbm/CBIG shell out to
+% `mkdir`/etc. with UNQUOTED paths, which word-split on the space and fail with
+% "Permission denied". So point BaseDir at a no-space symlink that resolves to the
+% 2T drive:  ~/verbgen_processed -> "/run/media/hanwang/Data 001 2T/.../processed".
+% (Create it once with:
+%   ln -sfn "/run/media/hanwang/Data 001 2T/hanwang/Documents/Data/verb_gen_krishnan/processed" ~/verbgen_processed )
 % ============================================================
-BaseDir = '/media/hanwang/Data/Data/ucl/gos_ich/verb_gen_krishnan/processed';
-% Full session re-extracted dropping the first 25 vols (noise-cancelling
-% headphones were still adapting to the scanner background noise during that
-% window). Use the '_full' run for MS-HBM (the rest-only '_rest' run is used by
-% the connectivity pipeline).
-fMRIRun = 'rfMRI_VERBGEN_AP_full';
+BaseDir = '/home/hanwang/verbgen_processed';
+
+% Two comparable re-extractions of the run (see Variant in the help above):
+%   'full'   = 'rfMRI_VERBGEN_AP_full' (session minus first 25 vols; the noise-
+%              cancelling headphones were still adapting to the scanner
+%              background noise during that window) -> dir 'mshbm_output'.
+%   'icafix' = 'rfMRI_VERBGEN_AP' (standard ICA+FIX hp2000_clean, all vols)
+%              -> dir 'mshbm_output_pre25vol'.
+% The rest-only '_rest' run is used by the connectivity pipeline, not here.
+switch Variant
+    case 'full'
+        fMRIRun = 'rfMRI_VERBGEN_AP_full';
+        OutName = 'mshbm_output';
+        CsvSub  = 'network_size_full';
+    case 'icafix'
+        fMRIRun = 'rfMRI_VERBGEN_AP';
+        OutName = 'mshbm_output_pre25vol';
+        CsvSub  = 'network_size_icafix';
+    otherwise
+        error('run_subject_mshbm:Variant', ...
+              'Unknown Variant "%s" (use ''full'' or ''icafix'').', Variant);
+end
 
 MidthickSurfs{1} = fullfile(BaseDir, Subject, 'MNINonLinear/fsaverage_LR32k', [Subject '.L.midthickness.32k_fs_LR.surf.gii']);
 MidthickSurfs{2} = fullfile(BaseDir, Subject, 'MNINonLinear/fsaverage_LR32k', [Subject '.R.midthickness.32k_fs_LR.surf.gii']);
 
-OutDir = fullfile(BaseDir, Subject, 'mshbm_output');
+OutDir = fullfile(BaseDir, Subject, OutName);
 DlabelFile  = fullfile(OutDir, 'MS-HBM_FunctionalNetworks_VertexWiseThresh0.01_w1_c10.dlabel.nii');
 DtseriesNet = fullfile(OutDir, 'MS-HBM_FunctionalNetworks_VertexWiseThresh0.01_w1_c10.dtseries.nii');
 
@@ -92,7 +125,7 @@ sizeFull(uCi) = NetworkSize(:);
 % ============================================================
 % Save per-subject CSV: subject, network_id, network_label, network_size_pct
 % ============================================================
-ResultsDir = fullfile(ProjectDir, 'results', 'network_size');
+ResultsDir = fullfile(ProjectDir, 'results', CsvSub);
 if ~exist(ResultsDir, 'dir'); mkdir(ResultsDir); end
 
 T = table( ...

@@ -15,12 +15,14 @@ set -e
 SUBJ=$1
 # Krishnan et al. (2021) data processed with adapted HCP pipeline (MSMSulc, no MSMAll).
 # Pre-processed outputs were moved to /media/hanwang/Data to save space (2026-06).
-DATA_ROOT=/media/hanwang/Data/Data/ucl/gos_ich/verb_gen_krishnan/processed
+# Preprocessed data + MS-HBM outputs live on the 2T internal drive (2026-07).
+# NB: the path contains a space ("Data 001 2T") so every expansion must be quoted.
+DATA_ROOT="/run/media/hanwang/Data 001 2T/hanwang/Documents/Data/verb_gen_krishnan/processed"
 # Rest-only run (MS-HBM uses the full rfMRI_VERBGEN_AP_full run instead).
 # Re-extracted 2026-06-30: drops the first 25 vols of the session (noise-cancelling
 # headphones still adapting) AND the first 10s of each rest block (HRF spill-over
 # from the preceding task block).
-DTSERIES=${DATA_ROOT}/${SUBJ}/MNINonLinear/Results/rfMRI_VERBGEN_AP_rest/rfMRI_VERBGEN_AP_rest_Atlas_hp2000_clean.dtseries.nii
+DTSERIES="${DATA_ROOT}/${SUBJ}/MNINonLinear/Results/rfMRI_VERBGEN_AP_rest/rfMRI_VERBGEN_AP_rest_Atlas_hp2000_clean.dtseries.nii"
 
 
 PROJECT_DIR=/home/hanwang/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen
@@ -59,18 +61,18 @@ echo "=== Subject ${SUBJ} ==="
 # ============================================================
 echo "[1/3] Parcellating..."
 wb_command -cifti-parcellate \
-    ${DTSERIES} \
-    ${ATLAS} \
+    "${DTSERIES}" \
+    "${ATLAS}" \
     COLUMN \
-    ${OUTDIR}/${SUBJ}.ptseries.nii
+    "${OUTDIR}/${SUBJ}.ptseries.nii"
 
 # ============================================================
 # Correlate (Fisher-z)
 # ============================================================
 echo "[2/3] Computing FC matrix..."
 wb_command -cifti-correlation \
-    ${OUTDIR}/${SUBJ}.ptseries.nii \
-    ${OUTDIR}/${SUBJ}.pconn.nii \
+    "${OUTDIR}/${SUBJ}.ptseries.nii" \
+    "${OUTDIR}/${SUBJ}.pconn.nii" \
     -fisher-z
 
 # ============================================================
@@ -78,7 +80,7 @@ wb_command -cifti-correlation \
 # ============================================================
 echo "[3/3] Exporting to text..."
 wb_command -cifti-convert -to-text \
-    ${OUTDIR}/${SUBJ}.pconn.nii \
-    ${OUTDIR}/${SUBJ}_FC.txt
+    "${OUTDIR}/${SUBJ}.pconn.nii" \
+    "${OUTDIR}/${SUBJ}_FC.txt"
 
 echo "Done: ${OUTDIR}/${SUBJ}_FC.txt"

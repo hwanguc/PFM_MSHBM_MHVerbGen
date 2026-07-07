@@ -2,8 +2,8 @@
 run_group_connectivity.py
 
 Batch driver for the CAB-NP anterior-striatum connectivity pipeline over every
-DLD (BL) and TD (BT) subject in the verb-gen subsample (excluding 513BT = 36
-subjects). For each subject it runs, in order:
+analysed subject (n=144: DLD/BL, TD/BT, HSL/BH) listed in the canonical analysis
+table dat_verbgen_analysis_144.csv. For each subject it runs, in order:
 
   1. 1_run_subject_connectivity_extraction_cab-np.sh  -> parcellate the rest
      dtseries with the anterior-striatum atlas and export a Fisher-z FC matrix
@@ -34,8 +34,8 @@ import pandas as pd
 
 PROJECT_DIR = "/home/hanwang/Apps/Programming/matlab-proj/PFM_MSHBM_MHVerbGen"
 CONN_DIR = f"{PROJECT_DIR}/connectivity"
-XLSX = ("/home/hanwang/Documents/Data/ucl/gos_ich/verb_gen_krishnan/"
-        "behavioural_scq_sdq/dat_verbgen_scqsdq_subsample.xlsx")
+LISTCSV = ("/home/hanwang/Documents/Data/verb_gen_krishnan/"
+           "behavioural_scq_sdq/dat_verbgen_analysis_144.csv")
 OUTBASE = f"{PROJECT_DIR}/results/connectivity_outputs"
 FC_TXT = f"{PROJECT_DIR}/derivatives/fc/{{}}_FC.txt"
 
@@ -44,11 +44,9 @@ ANALYSE_PY = f"{CONN_DIR}/2_run_subject_connectivity_analysis_cab-np.py"
 
 
 def subject_list():
-    """BL (DLD) + BT (TD) subjects from the spreadsheet, excluding 513BT."""
-    codes = pd.read_excel(XLSX)["code"].astype(str)
-    keep = codes[(codes.str.endswith("BL") | codes.str.endswith("BT"))
-                 & (codes != "513BT")]
-    return ["sub-" + c for c in keep]
+    """All analysed subjects (n=144: DLD/BL, TD/BT, HSL/BH) from the analysis table."""
+    codes = pd.read_csv(LISTCSV)["code"].astype(str)
+    return ["sub-" + c for c in codes]
 
 
 def run_stream(cmd, logf):
@@ -97,9 +95,11 @@ def main():
                     if rc != 0:
                         raise RuntimeError(f"extraction exited {rc}")
 
-                # 2) analysis (always; fast, regenerates figures + CSVs)
+                # 2) analysis (always; fast, regenerates figures + CSVs).
+                # Use the SAME interpreter that launched this driver (the project
+                # .venv) so the child sees pandas/numpy/matplotlib, not bare python3.
                 stage = "analysis"
-                rc = run_stream(["python3", ANALYSE_PY, sub], logf)
+                rc = run_stream([sys.executable, ANALYSE_PY, sub], logf)
                 if rc != 0:
                     raise RuntimeError(f"analysis exited {rc}")
 
