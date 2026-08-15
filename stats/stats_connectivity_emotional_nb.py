@@ -37,6 +37,7 @@ from matplotlib.colors import TwoSlopeNorm
 from scipy import stats
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
+import patsy
 
 warnings.filterwarnings("ignore")
 NPERM = 2000
@@ -225,16 +226,23 @@ for i, sc in enumerate(SUBCORTICAL):
             ax.set_visible(False); continue
         full, d = fits[(sc, ct)]
         zmean = d["FCz"].mean()
+        # delta-method 95% CI on the predicted mean (log-count scale, exp back)
+        di = full.model.data.design_info
+        kf = len(di.column_names)
+        beta = np.asarray(full.params)[:kf]          # alpha is the last param
+        cov = np.asarray(full.cov_params())[:kf, :kf]
         for g in GROUPS:
             dg = d[d.group == g]
             yj = dg["emotional"] + RNG.uniform(-0.15, 0.15, len(dg))
             ax.scatter(dg["FCz"], yj, s=22, alpha=0.8, color=GROUP_COLORS[g],
                        edgecolor="k", linewidth=0.3, label=g)
             xs = np.linspace(dg["FCz"].min(), dg["FCz"].max(), 40)
-            xs_c = xs - zmean
-            eta = full.params["Intercept"] + full.params["FCz_c"] * xs_c
-            if g != "TD":
-                eta = eta + full.params[MAIN[g]] + full.params[INTER[g]] * xs_c
+            grid_df = pd.DataFrame({"group": g, "FCz": xs, "FCz_c": xs - zmean})
+            X = np.asarray(patsy.dmatrix(di, grid_df))
+            eta = X @ beta
+            se = np.sqrt(np.einsum("ij,jk,ik->i", X, cov, X))
+            ax.fill_between(xs, np.exp(eta - 1.96 * se), np.exp(eta + 1.96 * se),
+                            color=GROUP_COLORS[g], alpha=0.13, lw=0)
             ax.plot(xs, np.exp(eta), color=GROUP_COLORS[g], lw=1.8)
         plr = stat.set_index("edge").loc[f"{sc}-{ct}", "inter_lr_p"]
         ax.set_title(f"{sc}-{ct}  (joint int LR p={plr:.3f})", fontsize=9)
@@ -245,7 +253,7 @@ for i, sc in enumerate(SUBCORTICAL):
             ax.set_ylabel("SDQ emotional", fontsize=9)
 axes[0, 0].legend(fontsize=8, loc="best")
 fig.suptitle("NB-predicted SDQ-emotional vs frontostriatal FC, by group "
-             "(points y-jittered)", fontsize=13)
+             "(shaded = 95% CI on predicted mean; points y-jittered)", fontsize=13)
 plt.tight_layout()
 plt.savefig(f"{CONN_DIR}/connectivity_emotional_nb_scatter.png",
             dpi=200, bbox_inches="tight")

@@ -50,6 +50,14 @@ results/connectivity_outputs/*
 !results/connectivity_outputs/group_frontostriatal_posthoc.csv
 !results/connectivity_outputs/connectivity_emotional_nb_stats.csv
 
+# Group-level language-connectivity figures + CSVs (per-subject sub-*/ stay ignored,
+# since git won't descend into the un-re-included sub-* dirs). The dir itself must be
+# re-included first, else results/* above ignores it and the negations never apply.
+!results/language_connectivity_outputs/
+results/language_connectivity_outputs/*
+!results/language_connectivity_outputs/*.png
+!results/language_connectivity_outputs/*.csv
+
 # Single-subject figures (keep all PNG/JPG, ignore the rest)
 !results/sub-509BT/
 results/sub-509BT/*

@@ -6,7 +6,7 @@ This repository contains the code for precision functional mapping (PFM; [Gordon
 
 The whole-brain FC analysis uses the parcellation defined by the Cole-Anticevic Brain Network Atlas (CAB-NP; [Ji et al., 2019](https://www.sciencedirect.com/science/article/abs/pii/S1053811918319657); [GitHub repo](https://github.com/ColeLab/ColeAnticevicNetPartition)). Region-of-interest (ROI) FC analysis uses nodes defined on the functional cortical atlas from [Glasser et al. (2016)](https://www.nature.com/articles/nature18933), which underpins the cortical parcels in Ji et al. (2019).
 
-The motivating question is the frontostriatal salience network and its relationship to mood, following the salience-network expansion in depression reported by [Lynch et al. (2024)](https://www.nature.com/articles/s41586-024-07805-2).
+The motivating question is the frontostriatal salience network and its relationship to mood, following the salience-network expansion in depression reported by [Lynch et al. (2024)](https://www.nature.com/articles/s41586-024-07805-2). A parallel arm examines the **language network's** frontal-putamen connectivity (subnetwork #3 of [Gordon et al., 2021](https://doi.org/10.1093/cercor/bhab387)), motivated by the elevated emotional difficulties seen in developmental language disorder (DLD).
 
 ---
 
@@ -69,6 +69,7 @@ run_group_mshbm('Variant', 'icafix', 'Exclude', {'sub-587BH','sub-616BT'})
 **Exploratory mood analyses** (in `stats/`, using the SDQ scores; group is the 3-level DLD/HSL/TD factor, TD reference):
 - `stats_emotional_salience.py` — group comparison of SDQ emotional symptoms (ANOVA + Welch + Kruskal-Wallis + Games–Howell) and within-group correlation of emotional symptoms with Salience-network size (`--variant`).
 - `stats_emotional_salience_nb_interaction.py` — the headline NB group × Salience interaction model with predicted-mean ± 95% CI figure, plus the joint-interaction LR and Freedman–Lane permutation tests (`--variant`).
+- `stats_emotional_language_nb_interaction.py` — the same NB group × network-size interaction model for the **Language** network (predicted-mean ± 95% CI, joint-interaction LR + Freedman–Lane permutation; `--variant`).
 - `stats_emotional_salience_interaction.py`, `_nonlinear.py`, `_glm.py` — earlier 2-group exploratory variants (OLS/HC3 + bootstrap; non-linear shape w/ LOO-CV; bounded-response NB / beta-binomial) kept for reference; not part of the current 3-group / full-cohort analysis.
 
 ---
@@ -110,7 +111,7 @@ Extracts and visualises frontostriatal FC, with the Caudate and Putamen restrict
 
 **Group-level analysis** (in `stats/`, over the 9 frontostriatal tiles; all testing is done in **Fisher-z** and only displayed means are back-transformed to r):
 - `stats/stats_group_connectivity.py` — 3-group (DLD/HSL/TD) per tile: Welch ANOVA omnibus + protected Games–Howell (Hedges g), Kruskal–Wallis/Dunn backup, BH-FDR across tiles. Gathers the per-subject `…_03_frontostriatal…csv` into `group_frontostriatal_long.csv` (no separate combine step), then writes the group-mean panels, the omnibus-F heatmap, and the pairwise-g contrast heatmaps.
-- `stats/stats_connectivity_emotional_nb.py` — group × FC interaction predicting SDQ-emotional, one **negative-binomial** model per tile (`emotional ~ C(group, Treatment('TD'))*FCz_c`, 3-level group), matching the salience-size NB model; joint-interaction LR + Freedman–Lane permutation, BH-FDR, interaction heatmaps (per group vs TD) + per-tile NB-predicted scatter.
+- `stats/stats_connectivity_emotional_nb.py` — group × FC interaction predicting SDQ-emotional, one **negative-binomial** model per tile (`emotional ~ C(group, Treatment('TD'))*FCz_c`, 3-level group), matching the salience-size NB model; joint-interaction LR + Freedman–Lane permutation, BH-FDR, interaction heatmaps (per group vs TD) + per-tile NB-predicted scatter with delta-method **95% CI bands**.
 
 ```bash
 .venv/bin/python stats/stats_group_connectivity.py          # 3-group difference per tile
@@ -123,15 +124,67 @@ Extracts and visualises frontostriatal FC, with the Caudate and Putamen restrict
 
 ---
 
+## Pipeline C — CAB-NP language-network frontal-putamen connectivity
+
+Extracts the single **left language-network frontal-putamen FC edge** highlighted by [Gordon et al. (2021)](https://doi.org/10.1093/cercor/bhab387) (corticostriatal subnetwork #3, the "medial/anterior putamen" component their parcellation places inside the language network): left pars opercularis (Glasser `L_44`) ↔ medial/anterior left putamen. Both nodes are **stock** CAB-NP Language-network parcels, so nothing is carved — but this arm must use the **stock** CAB-NP atlas, *not* the Pipeline-B anterior-striatum atlas (which relabels the precommissural putamen voxels and would cannibalise this parcel).
+
+| Script | Role |
+| --- | --- |
+| `connectivity/build_language_putamen_rois.py` | QC/definition: identify the two stock CAB-NP Language parcels — cortical `Language-14_L-Ctx` (key 74 = Glasser `L_44`, pars opercularis) and subcortical `Language-14_L-Putamen` (key 6140, medial/anterior left putamen, MNI centroid ≈ −20/+4/+5). Writes `atlas/CABNP_language14_rois.dlabel.nii` (2-ROI mask for `wb_view`) + an MNI-slice check PNG. |
+| `connectivity/1_run_subject_language_extraction_cab-np.sh` | Parcellate a subject's rest dtseries with the **stock** CAB-NP atlas (`wb_command`) → 718×718 Fisher-z FC to `derivatives/fc_cabnp_stock/<sub>_FC.txt` (parcel order in `derivatives/cabnp_stock_labels.txt`). |
+| `connectivity/2_run_subject_language_analysis_cab-np.py` | Pull the single `L_44` ↔ `Language-14_L-Putamen` edge → `results/language_connectivity_outputs/<sub>/<sub>_language_putamen_FC.csv`. |
+| `connectivity/run_group_language_connectivity.py` | Batch driver: extraction + analysis over all 144 subjects. |
+
+**Usage**
+
+```bash
+# (run from the repo root)
+# 1) Define / QC the two ROIs once (writes the masked dlabel + a slice-check PNG)
+../pfm-nsi/.venv/bin/python connectivity/build_language_putamen_rois.py   # needs nibabel
+
+# --- single subject ---
+./connectivity/1_run_subject_language_extraction_cab-np.sh sub-509BT
+.venv/bin/python connectivity/2_run_subject_language_analysis_cab-np.py sub-509BT
+
+# --- whole cohort (144 subjects) ---
+.venv/bin/python connectivity/run_group_language_connectivity.py                 # re-extract everyone
+.venv/bin/python connectivity/run_group_language_connectivity.py --skip-existing # skip extraction if FC.txt exists
+```
+
+**Group-level analysis** (in `stats/`; a single edge, so no multiple-comparison correction; testing in Fisher-z, means shown in r):
+- `stats/stats_group_language_connectivity.py` — 3-group (DLD/HSL/TD) Welch ANOVA on the edge + Kruskal–Wallis, protected Games–Howell (Hedges g) / Dunn; box-and-points figure.
+- `stats/stats_language_connectivity_emotional_nb.py` — group × FC interaction predicting SDQ-emotional, one **negative-binomial** model (`emotional ~ C(group, Treatment('TD'))*FCz_c`); joint-interaction LR + Freedman–Lane permutation; scatter with delta-method **95% CI bands** on each group's predicted mean (`…_predband.csv`).
+
+```bash
+.venv/bin/python stats/stats_group_language_connectivity.py           # 3-group difference on the edge
+.venv/bin/python stats/stats_language_connectivity_emotional_nb.py    # group x FC -> emotional (NB)
+```
+
+**Note**
+- `build_language_putamen_rois.py` and any other `nibabel` steps use the sibling **pfm-nsi** venv (`../pfm-nsi/.venv/bin/python`); the project `.venv` has no `nibabel`.
+
+---
+
+## Interactive notebooks
+
+`notebooks/` holds notebook versions of the two connectivity arms — one per network, each with three sections (between-group connectivity comparison, group × FC → SDQ-emotional NB, group × network-size → SDQ-emotional NB):
+- `notebooks/salience_network_analyses.ipynb`
+- `notebooks/language_network_analyses.ipynb`
+
+They are assembled from the validated `stats/` scripts (figures render inline; each cell still writes its PNG/CSV to `results/`). Select the project `.venv` as the kernel.
+
+---
+
 ## Repository layout
 
 ```
 mshbm/         Pipeline A — individual MS-HBM network mapping (MATLAB + Python)
-connectivity/  Pipeline B — CAB-NP anterior-striatum connectivity
+connectivity/  Pipelines B & C — CAB-NP connectivity (anterior-striatum salience + language frontal-putamen)
 stats/         group-level + mood statistics; build_analysis_table.py -> the 144-subject master table
+notebooks/     interactive notebook versions of the salience & language stats arms
 res0urces/     helper functions + CIFTI read/write (from the MSCcodebase)
 archived/      superseded scripts / pre-cut results kept for reference
-atlas/         custom CAB-NP anterior-striatum dlabel
+atlas/         custom CAB-NP dlabels (anterior-striatum + language-network ROIs)
 results/       per-subject and group outputs (mostly git-ignored; group figures + FINDINGS_summary.md tracked)
 .venv/         project virtualenv (git-ignored; see requirements.txt)
 ```
