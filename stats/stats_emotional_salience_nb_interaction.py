@@ -81,8 +81,8 @@ print(f"[{args.variant}] n={len(dat)} | "
 # ------------------------------------------------------------
 F_FULL = "emotional ~ C(group, Treatment('TD')) * salience_c"
 F_RED = "emotional ~ C(group, Treatment('TD')) + salience_c"
-nb_full = smf.negativebinomial(F_FULL, data=dat).fit(disp=0)
-nb_red = smf.negativebinomial(F_RED, data=dat).fit(disp=0)
+nb_full = smf.negativebinomial(F_FULL, data=dat).fit(disp=0, maxiter=1000)
+nb_red = smf.negativebinomial(F_RED, data=dat).fit(disp=0, maxiter=1000)
 lr_stat = 2 * (nb_full.llf - nb_red.llf)
 lr_p = stats.chi2.sf(lr_stat, 2)              # joint: both interaction terms
 

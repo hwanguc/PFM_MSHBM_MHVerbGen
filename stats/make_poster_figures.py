@@ -215,9 +215,9 @@ for sc in SUBCORTICAL:
         d = long[(long.subcortical == sc) & (long.cortical == ct)].copy()
         d["FCz_c"] = d["FCz"] - d["FCz"].mean()
         full = smf.negativebinomial(
-            "emotional ~ C(group, Treatment('TD')) * FCz_c", data=d).fit(disp=0)
+            "emotional ~ C(group, Treatment('TD')) * FCz_c", data=d).fit(disp=0, maxiter=1000)
         red = smf.negativebinomial(
-            "emotional ~ C(group, Treatment('TD')) + FCz_c", data=d).fit(disp=0)
+            "emotional ~ C(group, Treatment('TD')) + FCz_c", data=d).fit(disp=0, maxiter=1000)
         sal_fit[(sc, ct)] = (full, d)
         sal_p[(sc, ct)] = stats.chi2.sf(2 * (full.llf - red.llf), 2)
         sal_beta[(sc, ct)] = full.params[INTER["DLD"]]
@@ -238,9 +238,9 @@ dl["emotional"] = dl["emotional"].round().astype(int).clip(0, 10)
 dl = dl.rename(columns={"z": "FCz"})
 dl["FCz_c"] = dl["FCz"] - dl["FCz"].mean()
 lfull = smf.negativebinomial(
-    "emotional ~ C(group, Treatment('TD')) * FCz_c", data=dl).fit(disp=0)
+    "emotional ~ C(group, Treatment('TD')) * FCz_c", data=dl).fit(disp=0, maxiter=1000)
 lred = smf.negativebinomial(
-    "emotional ~ C(group, Treatment('TD')) + FCz_c", data=dl).fit(disp=0)
+    "emotional ~ C(group, Treatment('TD')) + FCz_c", data=dl).fit(disp=0, maxiter=1000)
 lang_lr_p = stats.chi2.sf(2 * (lfull.llf - lred.llf), 2)
 lang_beta = lfull.params[INTER["DLD"]]
 lang_waldp = lfull.pvalues[INTER["DLD"]]
@@ -324,9 +324,9 @@ def size_fit(label):
     xmean = d[col].mean()
     d[col + "_c"] = d[col] - xmean
     full = smf.negativebinomial(
-        f"emotional ~ C(group, Treatment('TD')) * {col}_c", data=d).fit(disp=0)
+        f"emotional ~ C(group, Treatment('TD')) * {col}_c", data=d).fit(disp=0, maxiter=1000)
     red = smf.negativebinomial(
-        f"emotional ~ C(group, Treatment('TD')) + {col}_c", data=d).fit(disp=0)
+        f"emotional ~ C(group, Treatment('TD')) + {col}_c", data=d).fit(disp=0, maxiter=1000)
     lr_p = stats.chi2.sf(2 * (full.llf - red.llf), 2)
     td_beta = full.params[f"{col}_c"]          # TD is the reference -> its slope
     td_p = full.pvalues[f"{col}_c"]

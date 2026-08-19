@@ -105,9 +105,9 @@ print(f"{len(d)} subjects | " + ", ".join(f"{g}={counts.get(g,0)}" for g in GROU
 # One NB model, 3-level group
 # ------------------------------------------------------------
 full = smf.negativebinomial(
-    "emotional ~ C(group, Treatment('TD')) * FCz_c", data=d).fit(disp=0)
+    "emotional ~ C(group, Treatment('TD')) * FCz_c", data=d).fit(disp=0, maxiter=1000)
 red = smf.negativebinomial(
-    "emotional ~ C(group, Treatment('TD')) + FCz_c", data=d).fit(disp=0)
+    "emotional ~ C(group, Treatment('TD')) + FCz_c", data=d).fit(disp=0, maxiter=1000)
 lr = 2 * (full.llf - red.llf)
 lr_p = stats.chi2.sf(lr, 2)
 perm_p = freedman_lane_p(d)

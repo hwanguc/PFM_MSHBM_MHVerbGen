@@ -116,9 +116,9 @@ for sc in SUBCORTICAL:
         d["FCz_c"] = d["FCz"] - d["FCz"].mean()
         try:
             full = smf.negativebinomial(
-                "emotional ~ C(group, Treatment('TD')) * FCz_c", data=d).fit(disp=0)
+                "emotional ~ C(group, Treatment('TD')) * FCz_c", data=d).fit(disp=0, maxiter=1000)
             red = smf.negativebinomial(
-                "emotional ~ C(group, Treatment('TD')) + FCz_c", data=d).fit(disp=0)
+                "emotional ~ C(group, Treatment('TD')) + FCz_c", data=d).fit(disp=0, maxiter=1000)
             lr = 2 * (full.llf - red.llf)
             lr_p = stats.chi2.sf(lr, 2)          # 2 df: both interaction terms
             rec = dict(edge=f"{sc}-{ct}", subcortical=sc, cortical=ct,

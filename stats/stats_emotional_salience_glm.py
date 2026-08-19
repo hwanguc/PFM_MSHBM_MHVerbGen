@@ -127,8 +127,8 @@ print("=" * 70)
 
 for g in ["DLD", "TD"]:
     d = dat[dat["group"] == g]
-    nb = smf.negativebinomial("emotional ~ salience_c", data=d).fit(disp=0)
-    po = smf.poisson("emotional ~ salience_c", data=d).fit(disp=0)
+    nb = smf.negativebinomial("emotional ~ salience_c", data=d).fit(disp=0, maxiter=1000)
+    po = smf.poisson("emotional ~ salience_c", data=d).fit(disp=0, maxiter=1000)
     b = nb.params["salience_c"]; p = nb.pvalues["salience_c"]
     ci = nb.conf_int().loc["salience_c"]
     od_stat, od_p = lr_test(nb.llf, po.llf, 1)       # boundary test (alpha=0)
@@ -144,9 +144,9 @@ for g in ["DLD", "TD"]:
 
 # pooled interaction
 nb_full = smf.negativebinomial(
-    "emotional ~ C(group, Treatment('TD')) * salience_c", data=dat).fit(disp=0)
+    "emotional ~ C(group, Treatment('TD')) * salience_c", data=dat).fit(disp=0, maxiter=1000)
 nb_red = smf.negativebinomial(
-    "emotional ~ C(group, Treatment('TD')) + salience_c", data=dat).fit(disp=0)
+    "emotional ~ C(group, Treatment('TD')) + salience_c", data=dat).fit(disp=0, maxiter=1000)
 inter = "C(group, Treatment('TD'))[T.DLD]:salience_c"
 lr_stat, lr_p = lr_test(nb_full.llf, nb_red.llf, 1)
 print("\n--- pooled group x salience interaction (NB) ---")
@@ -214,7 +214,7 @@ for ax, g in zip(axes, ["DLD", "TD"]):
     xs = np.linspace(d["salience"].min(), d["salience"].max(), 200)
     xs_c = xs - xc_mean
     # NB predicted mean = exp(eta)
-    nb = smf.negativebinomial("emotional ~ salience_c", data=d).fit(disp=0)
+    nb = smf.negativebinomial("emotional ~ salience_c", data=d).fit(disp=0, maxiter=1000)
     nb_mu = np.exp(nb.params["Intercept"] + nb.params["salience_c"] * xs_c)
     # BB predicted mean = n * inv_logit(eta)
     res, names, _ = fit_betabinom("emotional ~ salience_c", d)
